@@ -10,26 +10,3 @@
 html {
   font-family: "geistSans", "geistSans Fallback", "Segoe UI", ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
-
-.rdp {
-  margin: 0;
-}
-.rdp-root {
-  padding: 20px;
-}
-.rdp-month {
-  width: 100%;
-}
-.rdp-caption {
-  padding: 0 1rem;
-}
-.rdp-cell {
-  height: 40px;
-}
-.rdp-table {
-  max-width: 100%;
-}
-.rdp-month_caption {
-  justify-content: center;
-  padding-top: 8px;
-}

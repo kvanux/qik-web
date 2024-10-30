@@ -1,6 +1,9 @@
 import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
+import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
+import prisma from "@/prisma/client";
 
-export default function Home() {
+export default async function Home() {
+  const expenses = await prisma.expense.findMany();
   return (
     <div id="container" className="grid grid-cols-12 gap-6 w-full">
       <div
@@ -8,7 +11,10 @@ export default function Home() {
         className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel"
       >
         <div id="section-Logger" className="flex flex-col gap-4 w-full">
-          <div id="sectionTitle-Logger" className="w-full flex">
+          <div
+            id="sectionTitle-Logger"
+            className="w-full flex h-10 items-center"
+          >
             <h2 className="text-xl font-semibold text-neutral-800 w-full">
               QIK Log
             </h2>
@@ -21,17 +27,9 @@ export default function Home() {
       </div>
       <div
         id="panel-layout-9"
-        className="col-span-9 bg-white rounded-xl h-[400px] px-5 py-4 shadow-qele-panel"
+        className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel"
       >
-        <div id="section-Data" className="flex flex-col gap-4 w-full">
-          <div id="sectionTitle-Data" className="w-full flex">
-            <h2 className="text-xl font-semibold text-neutral-800 w-full">
-              QIK Cashflow
-            </h2>
-            <div id="interactGroup-Data" className="flex gap-2"></div>
-          </div>
-          <div id="sectionContent-Data"></div>
-        </div>
+        <ExpenseCalendar expenses={expenses}></ExpenseCalendar>
       </div>
     </div>
   );
