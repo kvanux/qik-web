@@ -1,0 +1,18 @@
+<svg width="107" height="100" viewBox="0 0 107 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2074_19470)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M42.2828 40.3046L64.081 17.0666L77.5311 29.6833L42.2828 40.3046Z" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M67.3623 20.0871L73.1879 14.3077L86.6381 26.9245L77.5259 29.6207L72.0005 24.4999" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M75.5995 101.51L109.066 91.0504M16.7046 52.2846C16.0652 50.171 17.2603 47.9393 19.3738 47.2999L88.2593 26.4611C90.3729 25.8217 92.6045 27.0167 93.2439 29.1304L109.452 82.7079C110.091 84.8215 108.896 87.0532 106.783 87.6926L37.8972 108.531C35.7837 109.171 33.552 107.976 32.9126 105.862L16.7046 52.2846Z" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M87.4984 70.5515L104.241 65.4865L98.4528 46.3517L81.7099 51.4167C76.1617 53.0951 72.9599 58.7392 74.5583 64.0231C76.1568 69.307 81.9503 72.2299 87.4984 70.5515Z" fill="url(#paint0_linear_2074_19470)" fill-opacity="0.5" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M94.6904 33.9141L108.583 79.8377" stroke="white" stroke-opacity="0.5" stroke-width="1.5" stroke-linecap="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_2074_19470" x1="72" y1="65.5" x2="99.5" y2="57" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0.5"/>
+<stop offset="1" stop-color="white" stop-opacity="0.1"/>
+</linearGradient>
+<clipPath id="clip0_2074_19470">
+<rect width="95.9579" height="95.9579" fill="white" transform="translate(0.946289 27.8113) rotate(-16.8313)"/>
+</clipPath>
+</defs>
+</svg>

@@ -4,6 +4,8 @@ import prisma from "@/prisma/client";
 
 export default async function Home() {
   const expenses = await prisma.expense.findMany();
+  const income = await prisma.income.findMany();
+  const billing = await prisma.billing.findMany();
   return (
     <div id="container" className="grid grid-cols-12 gap-6 w-full">
       <div
@@ -29,7 +31,11 @@ export default async function Home() {
         id="panel-layout-9"
         className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel"
       >
-        <ExpenseCalendar expenses={expenses}></ExpenseCalendar>
+        <ExpenseCalendar
+          expenses={expenses}
+          income={income}
+          billing={billing}
+        ></ExpenseCalendar>
       </div>
     </div>
   );

@@ -2,8 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { format } from "date-fns";
-import { Expense } from "@prisma/client";
-import prisma from "@/prisma/client";
+import { Expense, Income, Billing, MonthlyBalance } from "@prisma/client";
 import { MonthPicker } from "../../monthPicker";
 import {
   Popover,
@@ -14,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -23,12 +21,35 @@ import {
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isSameDay } from "date-fns";
+import BalanceCard from "../balanceCard/balanceCard";
+import { CardType } from "../balanceCard/balanceCard";
+import ColoredStats from "../coloredStats/coloredStats";
+import { StatsColor } from "../coloredStats/coloredStats";
+import { formatNumber } from "@/lib/formatNumber";
+import {
+  CircleChevronUp,
+  CircleChevronDown,
+  ArchiveRestore,
+  Banknote,
+  X,
+  Trash2,
+} from "lucide-react";
+import MonthExpenseChart from "../monthExpenseChart/monthExpenseChart";
+import { Drawer } from "vaul";
+import IncomeInputForm from "../singleInputForm/IncomeInputForm";
+import BillingInputForm from "../singleInputForm/BillingInputForm";
 
-const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
+interface DataProps {
+  expenses: Expense[];
+  income: Income[];
+  billing: Billing[];
+}
+
+const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [maxCells, setMaxCells] = useState<number>(10);
+  const [maxCells, setMaxCells] = useState<number>(8);
 
-  // Get days in selected month
+  // Get days
   const daysInMonth = useMemo(() => {
     const year = selectedMonth.getFullYear();
     const month = selectedMonth.getMonth();
@@ -42,7 +63,7 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
     return days;
   }, [selectedMonth]);
 
-  // Group expenses by date
+  // Compute expense
   const expensesByDate = useMemo(() => {
     const grouped: { [key: string]: Expense[] } = {};
 
@@ -60,6 +81,41 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
     return grouped;
   }, [daysInMonth, expenses, maxCells]);
 
+  // Compute income
+  const incomeList = useMemo(() => {
+    const filterIncome = income.filter(
+      (income) => income.month.getMonth() === selectedMonth.getMonth()
+    );
+    return filterIncome;
+  }, [selectedMonth, income]);
+
+  const currentIncome = useMemo(() => {
+    const incomeSum = incomeList.reduce(
+      (sum, income) => sum + income.amount,
+      0
+    );
+    return incomeSum;
+  }, [income, incomeList]);
+
+  //  Compute billing
+  const billingList = useMemo(() => {
+    const filterBilling = billing.filter(
+      (billing) => billing.month.getMonth() === selectedMonth.getMonth()
+    );
+    return filterBilling;
+  }, [selectedMonth, billing]);
+
+  const currentBilling = useMemo(() => {
+    const billingList = billing.filter(
+      (billing) => billing.month.getMonth() === selectedMonth.getMonth()
+    );
+    const billingSum = billingList.reduce(
+      (sum, billing) => sum + billing.amount,
+      0
+    );
+    return billingSum;
+  }, [billingList, billing]);
+
   // Calculate daily sums
   const dailySums = useMemo(() => {
     const sums: { [key: string]: number } = {};
@@ -69,10 +125,29 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
     return sums;
   }, [expensesByDate]);
 
+  // Calculate month aggregation
+  const monthlyData = useMemo(() => {
+    const chartData = daysInMonth.map((day) => {
+      const dateStr = format(day, "yyyy-MM-dd");
+      const daySum = dailySums[dateStr] || 0;
+
+      return {
+        date: format(day, "dd/MM"),
+        amount: daySum,
+      };
+    });
+
+    const total = chartData.reduce((sum, item) => sum + item.amount, 0);
+
+    return {
+      chartData,
+      monthTotal: total,
+      averageDaily: Math.trunc(total / daysInMonth.length),
+    };
+  }, [daysInMonth, dailySums]);
+
   // Get current day
   const today = new Date();
-
-  // Event Handler
 
   return (
     <div id="section-Data" className="flex flex-col gap-4 w-full">
@@ -90,9 +165,11 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
                 )}
               >
                 <CalendarIcon className="h-4 w-4 text-slate-700" />
-                {selectedMonth.toLocaleString("default", { month: "long" })}
-                {", "}
-                {selectedMonth.getFullYear()}
+                {selectedMonth.getMonth() == today.getMonth()
+                  ? `This month`
+                  : `${selectedMonth.toLocaleString("default", {
+                      month: "2-digit",
+                    })}/${selectedMonth.getFullYear()}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -118,8 +195,198 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
           </Popover>
         </div>
       </div>
+      <div id="sectionContent-Stats" className="grid grid-cols-9 gap-6 w-full">
+        <div
+          id="leftContent-Stats"
+          className="col-span-5 h-fit flex flex-col gap-4 "
+        >
+          <div
+            id="cardTop"
+            className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 gap-3 items-start"
+          >
+            <Drawer.Root direction="right">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
+                <ColoredStats
+                  label="Income This Month"
+                  value={currentIncome}
+                  type={StatsColor.green}
+                  Icon={CircleChevronUp}
+                />
+              </Drawer.Trigger>
+              <Drawer.Portal>
+                <Drawer.Content
+                  className="right-6 top-6 bottom-6 fixed z-10 outline-none w-[600px] flex"
+                  style={
+                    {
+                      "--initial-transform": "calc(100% + 8px)",
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
+                    <div className="w-full flex px-6 py-5 justify-between items-center">
+                      <Drawer.Title className="font-semibold text-xl text-slate-800">
+                        Edit Income
+                        <span className="text-slate-500 ml-3 font-normal text-lg">
+                          {selectedMonth.toLocaleString("default", {
+                            month: "2-digit",
+                          })}
+                          {"/"}
+                          {selectedMonth.getFullYear()}
+                        </span>
+                      </Drawer.Title>
+                      <Drawer.Close>
+                        <Button variant="ghost" size="icon" className="bg-none">
+                          <X className="text-slate-900 w-6 h-6"></X>
+                        </Button>
+                      </Drawer.Close>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
+                      <ul className="w-full flex flex-col gap-2">
+                        {incomeList.map((income) => (
+                          <li
+                            key={income.id}
+                            className="flex gap-2 items-center"
+                          >
+                            <span className="text-base font-medium text-slate-600 w-full">
+                              {income.title}
+                              {income.title == null && (
+                                <span className="text-slate-400 font-normal">
+                                  Not specified
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-base font-medium text-slate-900 w-full">
+                              {formatNumber(income.amount)}
+                              <span className="text-slate-400">,000</span>
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className=" shrink-0"
+                            >
+                              <Trash2 className="w-5 h-5 text-red-800" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                      <IncomeInputForm currentMonth={selectedMonth} />
+                    </div>
+                  </div>
+                </Drawer.Content>
+              </Drawer.Portal>
+            </Drawer.Root>
+            <Drawer.Root direction="right">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
+                <ColoredStats
+                  label="Billing"
+                  value={currentBilling}
+                  type={StatsColor.red}
+                  Icon={CircleChevronDown}
+                />
+              </Drawer.Trigger>
+              <Drawer.Portal>
+                <Drawer.Content
+                  className="right-6 top-6 bottom-6 fixed z-10 outline-none w-[600px] flex"
+                  style={
+                    {
+                      "--initial-transform": "calc(100% + 8px)",
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
+                    <div className="w-full flex px-6 py-5 justify-between items-center">
+                      <Drawer.Title className="font-semibold text-xl text-slate-800">
+                        Edit Billing
+                        <span className="text-slate-500 ml-3 font-normal text-lg">
+                          {selectedMonth.toLocaleString("default", {
+                            month: "2-digit",
+                          })}
+                          {"/"}
+                          {selectedMonth.getFullYear()}
+                        </span>
+                      </Drawer.Title>
+                      <Drawer.Close>
+                        <Button variant="ghost" size="icon" className="bg-none">
+                          <X className="text-slate-900 w-6 h-6"></X>
+                        </Button>
+                      </Drawer.Close>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
+                      <ul className="w-full flex flex-col gap-2">
+                        {billingList.map((billing) => (
+                          <li
+                            key={billing.id}
+                            className="flex gap-2 items-center"
+                          >
+                            <span className="text-base font-medium text-slate-600 w-full">
+                              {billing.title}
+                              {billing.title == null && (
+                                <span className="text-slate-400 font-normal">
+                                  Not specified
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-base font-medium text-slate-900 w-full">
+                              {formatNumber(billing.amount)}
+                              <span className="text-slate-400">,000</span>
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className=" shrink-0"
+                            >
+                              <Trash2 className="w-5 h-5 text-red-800" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                      <BillingInputForm currentMonth={selectedMonth} />
+                    </div>
+                  </div>
+                </Drawer.Content>
+              </Drawer.Portal>
+            </Drawer.Root>
+
+            <ColoredStats
+              label="Leftover"
+              value={0}
+              type={StatsColor.orange}
+              Icon={ArchiveRestore}
+            />
+            <ColoredStats
+              label="Starting Balance"
+              value={currentIncome - currentBilling}
+              type={StatsColor.purple}
+              Icon={Banknote}
+            />
+          </div>
+          <div id="rowBottom" className="w-full flex gap-4 shrink-0">
+            <BalanceCard
+              mainStat={0}
+              subStat1={0}
+              subStat2={0}
+              type={CardType.Tertiary}
+              cardTitle="Saving Fund"
+              subLabel1="% Total Income"
+              subLabel2="Deposit"
+            />
+            <BalanceCard
+              mainStat={currentIncome - currentBilling - monthlyData.monthTotal}
+              subStat1={monthlyData.monthTotal}
+              subStat2={monthlyData.averageDaily}
+              type={CardType.Primary}
+              cardTitle="In-hand Balance"
+              subLabel1="Total Spent"
+              subLabel2="Daily average"
+            />
+          </div>
+        </div>
+        <div id="rightContent-Stats" className="col-span-4 h-full">
+          <MonthExpenseChart data={monthlyData.chartData} />
+        </div>
+      </div>
       <div id="sectionContent-Data">
-        <div className="overflow-x-scroll w-full h-[30rem]">
+        <div className="w-full h-[25rem]">
           <Table className="w-full border-collapse table-fixed">
             <TableHeader>
               <TableRow>
@@ -128,11 +395,11 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
                     key={format(day, "yyyy-MM-dd")}
                     className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-24 h-8 sticky top-0 z-10 justify-start ${
                       isSameDay(day, today)
-                        ? "bg-gradient-to-b from-qik-ter-400 to-qik-pri-400"
+                        ? "bg-gradient-to-b from-qik-ter-500 to-qik-pri-500 text-white font-semibold"
                         : "bg-white"
                     }`}
                   >
-                    {format(day, "d")}
+                    {format(day, "dd/MM")}
                   </TableHead>
                 ))}
               </TableRow>
@@ -161,7 +428,7 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
                         {expense ? (
                           <span>
                             {"-"}
-                            {expense.amount}
+                            {formatNumber(expense.amount)}
                             <span className="text-slate-400">,000</span>
                           </span>
                         ) : (
@@ -192,7 +459,7 @@ const ExpenseCalendar = ({ expenses }: { expenses: Expense[] }) => {
                       ) : (
                         <span>
                           {"-"}
-                          {daySum}
+                          {formatNumber(daySum)}
                           <span className="text-slate-400">,000</span>
                         </span>
                       )}

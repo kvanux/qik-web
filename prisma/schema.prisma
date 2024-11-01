@@ -19,3 +19,31 @@ model Expense {
   amount    Int
   date      DateTime @db.Date
 }
+
+model Income {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  title     String?  @db.VarChar(50)
+  amount    Int
+  month     DateTime @db.Date
+}
+
+model Billing {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  title     String?  @db.VarChar(50)
+  amount    Int
+  month     DateTime @db.Date
+}
+
+model MonthlyBalance {
+  id        Int      @id @default(autoincrement())
+  year      Int
+  month     Int
+  balance   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([year, month])
+  @@index([year, month])
+}
