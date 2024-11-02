@@ -20,7 +20,9 @@ const MonthExpenseChart = ({
 }) => {
   return (
     <div className="h-full w-full flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-slate-800">Spending Trend</h2>
+      <h2 className="text-lg font-semibold text-slate-800">
+        Xu hướng chi tiêu
+      </h2>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}

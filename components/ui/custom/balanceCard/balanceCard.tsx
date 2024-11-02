@@ -77,35 +77,31 @@ const BalanceCard = ({
             width={17}
             height={24}
             alt=""
-            className="pb-[6px]"
+            className="pb-1"
           />
-          <span className="text-[32px] leading-10 font-semibold text-white">
+          <span className="text-3xl font-semibold text-white">
             {formatNumber(mainStat)}
             {mainStat != 0 && <span className="text-white/60">,000</span>}
           </span>
         </div>
         <div id="subStat" className="flex gap-2">
-          <span className="font-semibold text-sm text-white/60">
+          <span className="font-semibold text-sm text-white/80">
             {subLabel1}
             {":"}
           </span>
           <span className="font-semibold text-sm text-white">
             {formatNumber(subStat1)}
-            {type == CardType.Primary && (
-              <span className="text-white/60">,000</span>
-            )}
+            {subStat1 != 0 && <span className="text-white/60">,000</span>}
           </span>
         </div>
         <div id="subStat" className="flex gap-2">
-          <span className="font-semibold text-sm text-white/60">
+          <span className="font-semibold text-sm text-white/80">
             {subLabel2}
             {":"}
           </span>
           <span className="font-semibold text-sm text-white">
             {formatNumber(subStat2)}
-            {type == CardType.Primary && (
-              <span className="text-white/60">,000</span>
-            )}
+            {subStat2 != 0 && <span className="text-white/60">,000</span>}
           </span>
         </div>
       </div>

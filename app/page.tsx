@@ -18,7 +18,7 @@ export default async function Home() {
             className="w-full flex h-10 items-center"
           >
             <h2 className="text-xl font-semibold text-neutral-800 w-full">
-              QIK Log
+              Chi phí mới
             </h2>
             <div id="interactGroup-Logger" className="flex gap-2"></div>
           </div>

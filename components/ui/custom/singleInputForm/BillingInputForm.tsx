@@ -55,20 +55,32 @@ const BillingInputForm = ({ currentMonth }: Props) => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <Input
-        className="w-full"
+        className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
         {...register("title")}
-        placeholder="Enter title"
+        placeholder="Nhập mô tả"
       />
-      <Input
-        className="w-full"
-        {...register("amount")}
-        placeholder="Enter amount"
-      />
+      <div className="relative w-full">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2">
+          <img
+            src="/svg/dongIconM.svg"
+            alt="Dong Icon"
+            className="w-[14px] h-auto opacity-80"
+          />
+        </div>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-base font-medium text-slate-400">
+          ,000
+        </div>
+        <Input
+          className="w-full pl-10 pr-12 text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
+          {...register("amount")}
+          placeholder="Nhập số tiền"
+        ></Input>
+      </div>
       <Button
         type="submit"
         variant="default"
         size="icon"
-        className="shrink-0 bg-qik-pri-900"
+        className="shrink-0 bg-qik-pri-700"
       >
         <PlusCircle className="w-6 h-6 text-white shrink-0" />
       </Button>

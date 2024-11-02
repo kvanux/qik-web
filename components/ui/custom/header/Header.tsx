@@ -1,7 +1,11 @@
 import Image from "next/image";
-import { DateTime } from "@/components/ui/custom/DateTime";
+import UserCard from "../userCard/UserCard";
 
 const Header = () => {
+  const user = {
+    name: "Oliver",
+    avatar: "",
+  };
   return (
     <div
       id="header"
@@ -14,7 +18,10 @@ const Header = () => {
         height={40}
         className="w-10 h-10"
       />
-      <DateTime className="text-base text-gray-600 shrink-0" />
+      <div id="rightBtnsGroup">
+        <UserCard />
+        {/* <DateTime className="text-base text-gray-600 shrink-0" /> */}
+      </div>
     </div>
   );
 };

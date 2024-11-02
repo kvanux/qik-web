@@ -46,6 +46,9 @@ interface DataProps {
 }
 
 const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
+  // Get current day
+  const today = new Date();
+  const defaultMonth = today.getMonth();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [maxCells, setMaxCells] = useState<number>(8);
 
@@ -62,6 +65,16 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     }
     return days;
   }, [selectedMonth]);
+
+  const adjustSelectedMonth = useMemo(() => {
+    const adjustedMonth = new Date(
+      selectedMonth.getFullYear(),
+      selectedMonth.getMonth() + 1
+    );
+
+    if (selectedMonth !== today) return adjustedMonth;
+    else return selectedMonth;
+  }, [selectedMonth, today]);
 
   // Compute expense
   const expensesByDate = useMemo(() => {
@@ -146,14 +159,11 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     };
   }, [daysInMonth, dailySums]);
 
-  // Get current day
-  const today = new Date();
-
   return (
     <div id="section-Data" className="flex flex-col gap-4 w-full">
       <div id="sectionTitle-Data" className="w-full flex items-center">
         <h2 className="text-xl font-semibold text-neutral-800 w-full">
-          QIK Cashflow
+          Dòng tiền
         </h2>
         <div id="interactGroup-Data" className="flex gap-2">
           <Popover>
@@ -166,7 +176,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
               >
                 <CalendarIcon className="h-4 w-4 text-slate-700" />
                 {selectedMonth.getMonth() == today.getMonth()
-                  ? `This month`
+                  ? `Tháng này`
                   : `${selectedMonth.toLocaleString("default", {
                       month: "2-digit",
                     })}/${selectedMonth.getFullYear()}`}
@@ -207,7 +217,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
             <Drawer.Root direction="right">
               <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
                 <ColoredStats
-                  label="Income This Month"
+                  label="Thu nhập tháng"
                   value={currentIncome}
                   type={StatsColor.green}
                   Icon={CircleChevronUp}
@@ -225,7 +235,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
                     <div className="w-full flex px-6 py-5 justify-between items-center">
                       <Drawer.Title className="font-semibold text-xl text-slate-800">
-                        Edit Income
+                        Điều chỉnh thu nhập
                         <span className="text-slate-500 ml-3 font-normal text-lg">
                           {selectedMonth.toLocaleString("default", {
                             month: "2-digit",
@@ -245,13 +255,13 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         {incomeList.map((income) => (
                           <li
                             key={income.id}
-                            className="flex gap-2 items-center"
+                            className="flex gap-2 items-center pl-4"
                           >
                             <span className="text-base font-medium text-slate-600 w-full">
                               {income.title}
                               {income.title == null && (
                                 <span className="text-slate-400 font-normal">
-                                  Not specified
+                                  Không ghi rõ
                                 </span>
                               )}
                             </span>
@@ -269,7 +279,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                           </li>
                         ))}
                       </ul>
-                      <IncomeInputForm currentMonth={selectedMonth} />
+                      <IncomeInputForm currentMonth={adjustSelectedMonth} />
                     </div>
                   </div>
                 </Drawer.Content>
@@ -278,7 +288,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
             <Drawer.Root direction="right">
               <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
                 <ColoredStats
-                  label="Billing"
+                  label="Hóa đơn tháng"
                   value={currentBilling}
                   type={StatsColor.red}
                   Icon={CircleChevronDown}
@@ -296,7 +306,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
                     <div className="w-full flex px-6 py-5 justify-between items-center">
                       <Drawer.Title className="font-semibold text-xl text-slate-800">
-                        Edit Billing
+                        Điều chỉnh hóa đơn tháng
                         <span className="text-slate-500 ml-3 font-normal text-lg">
                           {selectedMonth.toLocaleString("default", {
                             month: "2-digit",
@@ -316,13 +326,13 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         {billingList.map((billing) => (
                           <li
                             key={billing.id}
-                            className="flex gap-2 items-center"
+                            className="flex gap-2 items-center pl-4"
                           >
                             <span className="text-base font-medium text-slate-600 w-full">
                               {billing.title}
                               {billing.title == null && (
                                 <span className="text-slate-400 font-normal">
-                                  Not specified
+                                  Không ghi rõ
                                 </span>
                               )}
                             </span>
@@ -340,7 +350,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                           </li>
                         ))}
                       </ul>
-                      <BillingInputForm currentMonth={selectedMonth} />
+                      <BillingInputForm currentMonth={adjustSelectedMonth} />
                     </div>
                   </div>
                 </Drawer.Content>
@@ -348,13 +358,13 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
             </Drawer.Root>
 
             <ColoredStats
-              label="Leftover"
+              label="Dư tháng trước"
               value={0}
               type={StatsColor.orange}
               Icon={ArchiveRestore}
             />
             <ColoredStats
-              label="Starting Balance"
+              label="Số dư đầu tháng"
               value={currentIncome - currentBilling}
               type={StatsColor.purple}
               Icon={Banknote}
@@ -366,18 +376,18 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
               subStat1={0}
               subStat2={0}
               type={CardType.Tertiary}
-              cardTitle="Saving Fund"
-              subLabel1="% Total Income"
-              subLabel2="Deposit"
+              cardTitle="Trích tiết kiệm"
+              subLabel1="% Tổng thu nhập"
+              subLabel2="Lần trích"
             />
             <BalanceCard
               mainStat={currentIncome - currentBilling - monthlyData.monthTotal}
               subStat1={monthlyData.monthTotal}
               subStat2={monthlyData.averageDaily}
               type={CardType.Primary}
-              cardTitle="In-hand Balance"
-              subLabel1="Total Spent"
-              subLabel2="Daily average"
+              cardTitle="Số dư hiện tại"
+              subLabel1="Đã chi"
+              subLabel2="Bình quân ngày"
             />
           </div>
         </div>
@@ -426,7 +436,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         }`}
                       >
                         {expense ? (
-                          <span>
+                          <span className="transition-all duration-500 delay-500">
                             {"-"}
                             {formatNumber(expense.amount)}
                             <span className="text-slate-400">,000</span>

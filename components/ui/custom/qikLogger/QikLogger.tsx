@@ -93,7 +93,7 @@ const QikLogger = () => {
           <img
             src="/svg/dongIconM.svg"
             alt="Dong Icon"
-            className="w-[14px] h-auto text-slate-700"
+            className="w-[14px] h-auto opacity-80"
           />
         </div>
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-base font-medium text-slate-400">
@@ -106,7 +106,7 @@ const QikLogger = () => {
               e.focus();
             }
           }}
-          placeholder="Enter expense amount"
+          placeholder="Nhập chi phí mới"
           className="w-full pl-10 pr-12 text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
           {...inputRegisterRest}
         />
@@ -126,7 +126,7 @@ const QikLogger = () => {
             )}
           >
             <CalendarIcon className="h-4 w-4 text-slate-700" />
-            {isToday(date) ? "Today" : format(date, "dd/MM/yyyy")}
+            {isToday(date) ? "Hôm nay" : format(date, "dd/MM/yyyy")}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
@@ -146,9 +146,9 @@ const QikLogger = () => {
 
       <Button
         type="submit"
-        className="text-white bg-qik-pri-900 hover:bg-qik-pri-700 font-medium text-base mt-2"
+        className="text-white bg-qik-sec-500 hover:bg-qik-pri-600 transition-all duration-500 font-semibold text-base mt-2"
       >
-        Submit
+        Nhập
       </Button>
     </form>
   );

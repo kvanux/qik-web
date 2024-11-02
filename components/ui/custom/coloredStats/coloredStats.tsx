@@ -52,7 +52,7 @@ const ColoredStats: FC<StatsProps> = ({ Icon, label, value, type }) => {
           width={11.43}
           height={16}
           alt=""
-          className="w-3 pt-[2px] ml-[3px] border-slate-700"
+          className="w-3 pt-[6px] border-slate-700"
         />
 
         <span className="text-xl font-semibold text-slate-800">
