@@ -15,6 +15,13 @@ interface IncomeForm {
   month: string;
 }
 
+const formatDateToUTC = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  return new Date(Date.UTC(year, month, day)).toISOString();
+};
+
 const IncomeInputForm = ({ currentMonth }: Props) => {
   const {
     register,

@@ -14,35 +14,61 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Calculate balance up to the specified month
+        // Get previous month's balance
+        const prevMonth = month === 1 ? 12 : month - 1;
+        const prevYear = month === 1 ? year - 1 : year;
+        
+        const prevBalance = await prisma.monthlyBalance.findUnique({
+            where: {
+                year_month: { year: prevYear, month: prevMonth }
+            }
+        });
+
+        // Get current month's transactions
+        const startOfMonth = new Date(year, month - 1, 1);
         const endOfMonth = new Date(year, month, 0);
 
         const [income, expenses, billing] = await Promise.all([
             prisma.income.aggregate({
-                where: { month: { lte: endOfMonth } },
+                where: {
+                    month: {
+                        gte: startOfMonth,
+                        lte: endOfMonth
+                    }
+                },
                 _sum: { amount: true }
             }),
             prisma.expense.aggregate({
-                where: { date: { lte: endOfMonth } },
+                where: {
+                    date: {
+                        gte: startOfMonth,
+                        lte: endOfMonth
+                    }
+                },
                 _sum: { amount: true }
             }),
             prisma.billing.aggregate({
-                where: { month: { lte: endOfMonth } },
+                where: {
+                    month: {
+                        gte: startOfMonth,
+                        lte: endOfMonth
+                    }
+                },
                 _sum: { amount: true }
             })
         ]);
 
         const balance = (income._sum.amount || 0) -
             (expenses._sum.amount || 0) -
-            (billing._sum.amount || 0);
+            (billing._sum.amount || 0) +
+            (prevBalance?.balance || 0);
 
-        // Store the calculated balance
         const monthlyBalance = await prisma.monthlyBalance.upsert({
             where: {
-                year_month: { year, month }
+                year_month: { year: year, month: month}
             },
             update: { balance },
-            create: { year, month, balance }
+            create: { year: year, month: month, balance }
         });
 
         return NextResponse.json(monthlyBalance, { status: 200 });

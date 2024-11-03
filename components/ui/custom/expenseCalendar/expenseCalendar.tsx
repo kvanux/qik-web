@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { Expense, Income, Billing, MonthlyBalance } from "@prisma/client";
 import { MonthPicker } from "../../monthPicker";
@@ -48,7 +48,6 @@ interface DataProps {
 const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
   // Get current day
   const today = new Date();
-  const defaultMonth = today.getMonth();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [maxCells, setMaxCells] = useState<number>(8);
 
@@ -66,15 +65,53 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return days;
   }, [selectedMonth]);
 
+  // Adjust month for parsing to ISO
   const adjustSelectedMonth = useMemo(() => {
     const adjustedMonth = new Date(
       selectedMonth.getFullYear(),
-      selectedMonth.getMonth() + 1
+      selectedMonth.getMonth(),
+      15
     );
 
     if (selectedMonth !== today) return adjustedMonth;
     else return selectedMonth;
   }, [selectedMonth, today]);
+
+  // Compute Leftover
+  const getLeftoverMonth = useMemo(() => {
+    if (selectedMonth.getMonth() === 0) {
+      return {
+        year: selectedMonth.getFullYear() - 1,
+        month: 12,
+      };
+    } else {
+      return {
+        year: selectedMonth.getFullYear(),
+        month: selectedMonth.getMonth(),
+      };
+    }
+  }, [selectedMonth]);
+
+  const [leftover, setLeftover] = useState(0);
+
+  useEffect(() => {
+    async function fetchBalance() {
+      try {
+        const response = await fetch(
+          `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch balance");
+
+        const data = await response.json();
+        setLeftover(data.balance);
+      } catch (error) {
+        console.error("Error fetching leftover:", error);
+        setLeftover(0);
+      }
+    }
+
+    fetchBalance();
+  }, [getLeftoverMonth]);
 
   // Compute expense
   const expensesByDate = useMemo(() => {
@@ -245,9 +282,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         </span>
                       </Drawer.Title>
                       <Drawer.Close>
-                        <Button variant="ghost" size="icon" className="bg-none">
-                          <X className="text-slate-900 w-6 h-6"></X>
-                        </Button>
+                        <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
                     <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
@@ -316,9 +351,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         </span>
                       </Drawer.Title>
                       <Drawer.Close>
-                        <Button variant="ghost" size="icon" className="bg-none">
-                          <X className="text-slate-900 w-6 h-6"></X>
-                        </Button>
+                        <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
                     <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
@@ -359,13 +392,13 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
 
             <ColoredStats
               label="Dư tháng trước"
-              value={0}
+              value={leftover}
               type={StatsColor.orange}
               Icon={ArchiveRestore}
             />
             <ColoredStats
               label="Số dư đầu tháng"
-              value={currentIncome - currentBilling}
+              value={currentIncome - currentBilling + leftover}
               type={StatsColor.purple}
               Icon={Banknote}
             />
@@ -381,7 +414,12 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
               subLabel2="Lần trích"
             />
             <BalanceCard
-              mainStat={currentIncome - currentBilling - monthlyData.monthTotal}
+              mainStat={
+                currentIncome +
+                leftover -
+                currentBilling -
+                monthlyData.monthTotal
+              }
               subStat1={monthlyData.monthTotal}
               subStat2={monthlyData.averageDaily}
               type={CardType.Primary}
