@@ -25,10 +25,6 @@ Welcome to **QIK**! This free-to-use application is designed to help you manage 
   - Quarterly and yearly insights in Table and Chart formats.
   - Trend analysis for informed decision-making.
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
 ## Contact
 
 For any questions or feedback, please reach out to [nkhanhvan293@gmail.com].
