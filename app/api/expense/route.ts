@@ -6,6 +6,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(expenses, {status: 200})
 }
 
+export async function DELETE(request: NextRequest) {
+    try {
+        const searchParams = new URL(request.url).searchParams;
+        const reqId = parseInt(searchParams.get('id') || '');
+    
+        if (!reqId) {
+            return NextResponse.json(
+                { error: 'ID is required' },
+                { status: 400 }
+            );
+        }
+    
+        const removeExpense = await prisma.expense.delete({
+            where: {id: reqId}
+        })
+    
+        return NextResponse.json("Deleted succesfully", {status: 200})
+    } catch (error) {
+        return NextResponse.json(
+            { error: 'Failed to delete expense' },
+            { status: 404 }
+        );
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();

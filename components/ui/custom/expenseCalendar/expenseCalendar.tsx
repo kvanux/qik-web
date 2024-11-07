@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isSameDay } from "date-fns";
@@ -38,6 +39,7 @@ import MonthExpenseChart from "../monthExpenseChart/monthExpenseChart";
 import { Drawer } from "vaul";
 import IncomeInputForm from "../singleInputForm/IncomeInputForm";
 import BillingInputForm from "../singleInputForm/BillingInputForm";
+import { revalidateExpenses } from "@/app/actions";
 
 interface DataProps {
   expenses: Expense[];
@@ -112,6 +114,44 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
 
     fetchBalance();
   }, [getLeftoverMonth]);
+
+  // Delete handler
+  const deleteExpense = async function (expenseId: number) {
+    try {
+      const response = await fetch(`/api/expense?id=${expenseId}`, {
+        method: "DELETE",
+      });
+      await revalidateExpenses();
+      toast.info("Expense deleted.");
+      return response;
+    } catch (error) {
+      toast.error("Failed to delete", { description: `${error}` });
+    }
+  };
+  const deleteIncome = async function (incomeId: number) {
+    try {
+      const response = await fetch(`/api/income?id=${incomeId}`, {
+        method: "DELETE",
+      });
+      await revalidateExpenses();
+      toast.info("Income deleted.");
+      return response;
+    } catch (error) {
+      toast.error("Failed to delete", { description: `${error}` });
+    }
+  };
+  const deleteBilling = async function (billingId: number) {
+    try {
+      const response = await fetch(`/api/billing?id=${billingId}`, {
+        method: "DELETE",
+      });
+      await revalidateExpenses();
+      toast.info("Billing deleted.");
+      return response;
+    } catch (error) {
+      toast.error("Failed to delete", { description: `${error}` });
+    }
+  };
 
   // Compute expense
   const expensesByDate = useMemo(() => {
@@ -252,7 +292,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
             className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 gap-3 items-start"
           >
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
                 <ColoredStats
                   label="Thu nhập tháng"
                   value={currentIncome}
@@ -305,6 +345,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                               <span className="text-slate-400">,000</span>
                             </span>
                             <Button
+                              onClick={() => deleteIncome(income.id)}
                               variant="ghost"
                               size="icon"
                               className=" shrink-0"
@@ -321,7 +362,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
               </Drawer.Portal>
             </Drawer.Root>
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-sm cursor-pointer rounded-xl transition-all duration-200 ease-in-out hover:p-1">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
                 <ColoredStats
                   label="Hóa đơn tháng"
                   value={currentBilling}
@@ -374,6 +415,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                               <span className="text-slate-400">,000</span>
                             </span>
                             <Button
+                              onClick={() => deleteBilling(billing.id)}
                               variant="ghost"
                               size="icon"
                               className=" shrink-0"
@@ -454,7 +496,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
             </TableHeader>
             <TableBody>
               {Array.from({ length: maxCells }, (_, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow key={rowIndex} className="flex flex-row w-fit">
                   {daysInMonth.map((day) => {
                     const dateStr = format(day, "yyyy-MM-dd");
                     const dayExpenses = expensesByDate[dateStr] || [];
@@ -462,8 +504,12 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
 
                     return (
                       <TableCell
-                        key={`${dateStr}-${rowIndex}`}
-                        className={`p-2 text-left text-sm h-10 w-24 justify-start ${
+                        key={
+                          expense
+                            ? `${dateStr}-${expense.id}`
+                            : `${dateStr}-${rowIndex}`
+                        }
+                        className={`group p-2 text-left text-sm h-10 w-24 justify-start items-center transition-all duration-500 flex ${
                           expense
                             ? "text-slate-800 font-medium"
                             : "text-slate-300 font-normal"
@@ -474,13 +520,23 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         }`}
                       >
                         {expense ? (
-                          <span className="transition-all duration-500 delay-500">
+                          <span>
                             {"-"}
                             {formatNumber(expense.amount)}
                             <span className="text-slate-400">,000</span>
                           </span>
                         ) : (
                           "-"
+                        )}
+                        {expense && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteExpense(expense.id)}
+                            className="hidden group-hover:flex transition-all duration-500 shrink-0 hover:bg-white shadow-[0px_0px_28px_#ffffff]"
+                          >
+                            <Trash2 className="w-5 h-5 text-red-800"></Trash2>
+                          </Button>
                         )}
                       </TableCell>
                     );

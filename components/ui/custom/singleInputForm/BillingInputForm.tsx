@@ -4,6 +4,7 @@ import { Input } from "../../input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { revalidateExpenses } from "@/app/actions";
 import { PlusCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   currentMonth: Date;
@@ -16,11 +17,7 @@ interface BillingForm {
 }
 
 const BillingInputForm = ({ currentMonth }: Props) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<BillingForm>({
+  const { register, handleSubmit } = useForm<BillingForm>({
     defaultValues: {
       month: currentMonth.toISOString(),
     },
@@ -36,16 +33,12 @@ const BillingInputForm = ({ currentMonth }: Props) => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Validation errors:", errorData);
-      } else {
-        const newExpense = await response.json();
-        console.log("Billing added:", newExpense);
-        await revalidateExpenses();
-      }
+      await revalidateExpenses();
+      toast.success(`Billing added successfully`);
+
+      return response.json();
     } catch (error) {
-      console.error("Failed to add billing", error);
+      toast.error("Failed to add billing", { description: `${error}` });
     }
   };
 
@@ -54,11 +47,6 @@ const BillingInputForm = ({ currentMonth }: Props) => {
       className="flex gap-2 w-full items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <Input
-        className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
-        {...register("title")}
-        placeholder="Nhập mô tả"
-      />
       <div className="relative w-full">
         <div className="absolute left-4 top-1/2 -translate-y-1/2">
           <img
@@ -74,13 +62,19 @@ const BillingInputForm = ({ currentMonth }: Props) => {
           className="w-full pl-10 pr-12 text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
           {...register("amount")}
           placeholder="Nhập số tiền"
-        ></Input>
+          autoComplete="off"
+        />
       </div>
+      <Input
+        className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
+        {...register("title")}
+        placeholder="Nhập mô tả"
+      />
       <Button
         type="submit"
         variant="default"
         size="icon"
-        className="shrink-0 bg-qik-pri-700"
+        className="shrink-0 bg-qik-pri-700 hover:bg-qik-pri-500"
       >
         <PlusCircle className="w-6 h-6 text-white shrink-0" />
       </Button>

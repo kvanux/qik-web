@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { revalidateExpenses } from "@/app/actions";
+import { toast } from "sonner";
 
 interface ExpenseForm {
   amount: number;
@@ -32,12 +33,7 @@ const QikLogger = () => {
     );
   };
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<ExpenseForm>({
+  const { register, handleSubmit, setValue } = useForm<ExpenseForm>({
     defaultValues: {
       date: new Date().toISOString(),
     },
@@ -64,16 +60,12 @@ const QikLogger = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Validation errors:", errorData);
-      } else {
-        const newExpense = await response.json();
-        console.log("Expense added:", newExpense);
-        await revalidateExpenses();
-      }
+      await revalidateExpenses();
+      toast.success(`Expense added successfully`);
+
+      return response.json();
     } catch (error) {
-      console.error("Failed to add expense:", error);
+      toast.error("Failed to add expense", { description: `${error}` });
     }
   };
 
@@ -109,6 +101,7 @@ const QikLogger = () => {
           placeholder="Nhập chi phí mới"
           className="w-full pl-10 pr-12 text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
           {...inputRegisterRest}
+          autoComplete="off"
         />
       </div>
       {/* {errors.amount && (

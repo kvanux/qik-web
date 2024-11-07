@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/ui/custom/header/Header";
 import { Inter, Manrope } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-[inter] antialiased px-10 py-6`}>
         <Header></Header>
         {children}
+        <Toaster richColors closeButton theme="light" />
       </body>
     </html>
   );
