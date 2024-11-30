@@ -64,10 +64,10 @@ const BalanceCard = ({
         className={`p-4 flex flex-col justify-center items-start 
         ${
           type == CardType.Primary &&
-          "bg-gradient-to-t from-qik-pri-400 from-[-20%] to-qik-pri-400/20"
+          "bg-gradient-to-t from-qik-pri-600 from-[-20%] to-qik-pri-400/20"
         } ${
           type == CardType.Tertiary &&
-          "bg-gradient-to-t from-qik-ter-400 from-[-20%] to-qik-ter-400/20"
+          "bg-gradient-to-t from-qik-ter-600 from-[-20%] to-qik-ter-400/20"
         }
         `}
       >

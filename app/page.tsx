@@ -1,13 +1,32 @@
 import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
 import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
 import prisma from "@/prisma/client";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export default async function Home() {
-  const expenses = await prisma.expense.findMany();
-  const income = await prisma.income.findMany();
-  const billing = await prisma.billing.findMany();
+  const session = await getServerSession(authOptions);
+  if (!session) console.log("Session not found");
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session!.user!.email as string },
+  });
+  const currentUserID = currentUser?.id;
+
+  const expenses = await prisma.expense.findMany({
+    where: { userID: currentUserID },
+  });
+  const income = await prisma.income.findMany({
+    where: { userID: currentUserID },
+  });
+  const billing = await prisma.billing.findMany({
+    where: { userID: currentUserID },
+  });
+
   return (
-    <div id="container" className="grid grid-cols-12 gap-6 w-full">
+    <div
+      id="container"
+      className="grid grid-cols-12 gap-6 w-full max-w-[1840px] self-center"
+    >
       <div
         id="panel-layout-3"
         className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel"

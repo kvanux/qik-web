@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
-
-export async function GET(request: NextRequest) {
-    const billing = await prisma.billing.findMany({});
-    return NextResponse.json(billing, {status: 200})
-}
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function DELETE(request: NextRequest) {
     try {
@@ -33,12 +30,33 @@ export async function DELETE(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
+        const session = await getServerSession(authOptions)
+        if (!session) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            );
+        }
+    
+        const currentUser = await prisma.user.findUnique({
+            where: {email: session!.user!.email as string}
+        })
+        const currentUserID = currentUser?.id
+        if (!currentUserID) {
+            return NextResponse.json(
+                { error: 'User ID is required' },
+                { status: 400 }
+            );
+        }
+
         const body = await request.json();
         const amount = parseInt(body.amount, 10);
         const newBilling = await prisma.billing.create({ 
             data: {  amount: amount, 
                 month: new Date(body.month), 
-                title: body.title || null } 
+                title: body.title || null,
+                userID: currentUserID
+            } 
         })
 
         const year = newBilling.month.getFullYear();
@@ -64,7 +82,8 @@ export async function POST(request: NextRequest) {
                     month: {
                         gte: startOfMonth,
                         lte: endOfMonth
-                    }
+                    },
+                    userID: currentUserID
                 },
                 _sum: { amount: true }
             }),
@@ -73,7 +92,8 @@ export async function POST(request: NextRequest) {
                     date: {
                         gte: startOfMonth,
                         lte: endOfMonth
-                    }
+                    },
+                    userID: currentUserID
                 },
                 _sum: { amount: true }
             }),
@@ -82,7 +102,8 @@ export async function POST(request: NextRequest) {
                     month: {
                         gte: startOfMonth,
                         lte: endOfMonth
-                    }
+                    },
+                    userID: currentUserID
                 },
                 _sum: { amount: true }
             })
@@ -98,7 +119,7 @@ export async function POST(request: NextRequest) {
                 year_month: { year, month }
             },
             update: { balance },
-            create: { year, month, balance }
+            create: { year, month, balance, userID: currentUserID }
         });
 
         return NextResponse.json(newBilling, {status: 201})

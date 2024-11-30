@@ -18,6 +18,10 @@ model Expense {
   createdAt DateTime @default(now())
   amount    Int
   date      DateTime @db.Date
+  user      User     @relation(fields: [userID], references: [id])
+  userID    String
+  // category   Category? @relation(fields: [categoryID], references: [id])
+  // categoryID Int
 }
 
 model Income {
@@ -26,6 +30,8 @@ model Income {
   title     String?  @db.VarChar(50)
   amount    Int
   month     DateTime @db.Date
+  user      User     @relation(fields: [userID], references: [id])
+  userID    String
 }
 
 model Billing {
@@ -34,6 +40,8 @@ model Billing {
   title     String?  @db.VarChar(50)
   amount    Int
   month     DateTime @db.Date
+  user      User     @relation(fields: [userID], references: [id])
+  userID    String
 }
 
 model MonthlyBalance {
@@ -43,7 +51,71 @@ model MonthlyBalance {
   balance   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userID], references: [id])
+  userID    String
 
   @@unique([year, month])
   @@index([year, month])
+}
+
+// model Category {
+//   id     Int    @id @default(autoincrement())
+//   title  String @db.VarChar(50)
+//   user   User   @relation(fields: [userID], references: [id])
+//   userID String    
+
+//   Expense Expense[]
+// }
+
+model User {
+  id            String           @id @default(cuid())
+  name          String?
+  email         String?          @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  expenses      Expense[]
+  income        Income[]
+  billing       Billing[]
+  balance       MonthlyBalance[]
+  // category Category[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { Expense, Income, Billing, MonthlyBalance } from "@prisma/client";
+import { Expense, Income, Billing } from "@prisma/client";
 import { MonthPicker } from "../../monthPicker";
 import {
   Popover,
@@ -98,18 +98,14 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
 
   useEffect(() => {
     async function fetchBalance() {
-      try {
-        const response = await fetch(
-          `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch balance");
+      const response = await fetch(
+        `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}`,
+        { credentials: "include" }
+      );
+      if (!response.ok) throw new Error("Failed to fetch balance");
 
-        const data = await response.json();
-        setLeftover(data.balance);
-      } catch (error) {
-        console.error("Error fetching leftover:", error);
-        setLeftover(0);
-      }
+      const data = await response.json();
+      setLeftover(data.balance);
     }
 
     fetchBalance();
@@ -235,6 +231,20 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
       averageDaily: Math.trunc(total / daysInMonth.length),
     };
   }, [daysInMonth, dailySums]);
+
+  // Today into view
+  const todayRef = useRef<HTMLTableCellElement>(null);
+
+  useEffect(() => {
+    daysInMonth.forEach((day) => {
+      if (isSameDay(day, today) && todayRef.current) {
+        todayRef.current.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+        });
+      }
+    });
+  }, [daysInMonth, today]);
 
   return (
     <div id="section-Data" className="flex flex-col gap-4 w-full">
@@ -476,12 +486,13 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
         </div>
       </div>
       <div id="sectionContent-Data">
-        <div className="w-full h-[25rem]">
+        <div className="w-full">
           <Table className="w-full border-collapse table-fixed">
             <TableHeader>
               <TableRow>
                 {daysInMonth.map((day) => (
                   <TableHead
+                    ref={isSameDay(day, today) ? todayRef : null}
                     key={format(day, "yyyy-MM-dd")}
                     className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-24 h-8 sticky top-0 z-10 justify-start ${
                       isSameDay(day, today)
@@ -513,11 +524,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                           expense
                             ? "text-slate-800 font-medium"
                             : "text-slate-300 font-normal"
-                        } ${
-                          isSameDay(day, today)
-                            ? "border-x border-x-qik-pri-300"
-                            : ""
-                        }`}
+                        } ${isSameDay(day, today) ? "bg-qik-pri-100" : ""}`}
                       >
                         {expense ? (
                           <span>
@@ -535,7 +542,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                             onClick={() => deleteExpense(expense.id)}
                             className="hidden group-hover:flex transition-all duration-500 shrink-0 hover:bg-white shadow-[0px_0px_28px_#ffffff]"
                           >
-                            <Trash2 className="w-5 h-5 text-red-800"></Trash2>
+                            <Trash2 className="w-5 h-5 text-red-800" />
                           </Button>
                         )}
                       </TableCell>
@@ -548,15 +555,11 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   const dateStr = format(day, "yyyy-MM-dd");
                   const daySum = dailySums[dateStr] || 0;
                   return (
-                    <td
+                    <TableCell
                       key={`${dateStr}-sum`}
-                      className={`p-2 text-left text-sm h-10 w-24 sticky bottom-0 font-bold ${
+                      className={`p-2 pb-5 text-left text-sm h-10 w-24 bottom-0 font-bold ${
                         daySum === 0 ? "text-slate-300" : "text-slate-800"
-                      } ${
-                        isSameDay(day, today)
-                          ? "border-x border-qik-pri-300"
-                          : ""
-                      }`}
+                      } ${isSameDay(day, today) ? "bg-qik-pri-100" : ""}`}
                     >
                       {daySum === 0 ? (
                         <span>0</span>
@@ -567,7 +570,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                           <span className="text-slate-400">,000</span>
                         </span>
                       )}
-                    </td>
+                    </TableCell>
                   );
                 })}
               </TableRow>

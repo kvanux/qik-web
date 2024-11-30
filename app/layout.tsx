@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/ui/custom/header/Header";
 import { Inter, Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import AuthProvider from "./auth/Provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,11 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-[inter] antialiased px-10 py-6`}>
-        <Header></Header>
-        {children}
-        <Toaster richColors closeButton theme="light" />
-      </body>
+      <AuthProvider>
+        <body
+          className={`${inter.variable} font-[inter] antialiased flex flex-col justify-center px-10`}
+        >
+          <Header></Header>
+          {children}
+          <Toaster richColors closeButton theme="light" />
+        </body>
+      </AuthProvider>
     </html>
   );
 }

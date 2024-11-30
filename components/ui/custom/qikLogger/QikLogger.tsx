@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { revalidateExpenses } from "@/app/actions";
 import { toast } from "sonner";
+import { z } from "zod";
 
 interface ExpenseForm {
   amount: number;
@@ -139,7 +140,7 @@ const QikLogger = () => {
 
       <Button
         type="submit"
-        className="text-white bg-qik-sec-500 hover:bg-qik-pri-600 transition-all duration-500 font-semibold text-base mt-2"
+        className="text-white bg-qik-sec-600 hover:bg-qik-pri-600 transition-colors duration-500 font-semibold text-base mt-2"
       >
         Nhập
       </Button>
