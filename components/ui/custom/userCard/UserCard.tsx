@@ -8,9 +8,10 @@ interface UserInfo {
 }
 
 const UserCard = ({ name, email, avatar }: UserInfo) => {
-  const regex = /[A-Z]/g;
+  const regex = /[\b(?=\w)]/;
   const initials = name.match(regex);
-  const avatarFallback = initials?.join("");
+  const initReduced = initials?.slice(0, 2);
+  const avatarFallback = initReduced?.join("");
 
   return (
     <div className="flex gap-3 max-w-80 justify-end">

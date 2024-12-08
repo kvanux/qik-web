@@ -21,8 +21,9 @@ interface StatsProps {
 const ColoredStats: FC<StatsProps> = ({ Icon, label, value, type }) => {
   return (
     <div
-      className={` flex flex-col gap-1 pr-6 ${
-        type == StatsColor.purple && "pl-4 shrink-0 border-l border-l-slate-300"
+      className={`flex flex-col gap-1 pr-3 shrink-0 ${
+        type == StatsColor.purple &&
+        "pl-3 pr-4 border-l border-l-slate-300 shrink-0 w-44"
       }`}
     >
       <div className="flex items-center gap-1">

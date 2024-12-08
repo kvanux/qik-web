@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/ui/custom/header/Header";
 import { Inter, Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import Footer from "@/components/ui/custom/footer/Footer";
 import AuthProvider from "./auth/Provider";
 
 const inter = Inter({
@@ -32,9 +33,15 @@ export default function RootLayout({
         <body
           className={`${inter.variable} font-[inter] antialiased flex flex-col justify-center px-10`}
         >
-          <Header></Header>
+          <Header />
           {children}
-          <Toaster richColors closeButton theme="light" />
+          <Toaster
+            richColors
+            closeButton
+            theme="light"
+            position="bottom-left"
+          />
+          <Footer />
         </body>
       </AuthProvider>
     </html>

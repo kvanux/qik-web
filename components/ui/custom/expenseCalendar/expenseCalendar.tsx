@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { Expense, Income, Billing } from "@prisma/client";
-import { MonthPicker } from "../../monthPicker";
+import { MonthPicker } from "@/components/ui/monthPicker";
 import {
   Popover,
   PopoverContent,
@@ -22,10 +22,10 @@ import { toast } from "sonner";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isSameDay } from "date-fns";
-import BalanceCard from "../balanceCard/balanceCard";
-import { CardType } from "../balanceCard/balanceCard";
-import ColoredStats from "../coloredStats/coloredStats";
-import { StatsColor } from "../coloredStats/coloredStats";
+import BalanceCard from "@/components/ui/custom/balanceCard/balanceCard";
+import { CardType } from "@/components/ui/custom/balanceCard/balanceCard";
+import ColoredStats from "@/components/ui/custom/coloredStats/coloredStats";
+import { StatsColor } from "@/components/ui/custom/coloredStats/coloredStats";
 import { formatNumber } from "@/lib/formatNumber";
 import {
   CircleChevronUp,
@@ -35,10 +35,10 @@ import {
   X,
   Trash2,
 } from "lucide-react";
-import MonthExpenseChart from "../monthExpenseChart/monthExpenseChart";
+import MonthExpenseChart from "@/components/ui/custom/monthExpenseChart/monthExpenseChart";
 import { Drawer } from "vaul";
-import IncomeInputForm from "../singleInputForm/IncomeInputForm";
-import BillingInputForm from "../singleInputForm/BillingInputForm";
+import IncomeInputForm from "@/components/ui/custom/singleInputForm/IncomeInputForm";
+import BillingInputForm from "@/components/ui/custom/singleInputForm/BillingInputForm";
 import { revalidateExpenses } from "@/app/actions";
 
 interface DataProps {
@@ -224,13 +224,14 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     });
 
     const total = chartData.reduce((sum, item) => sum + item.amount, 0);
+    const mtdLength = today.getDate();
 
     return {
       chartData,
       monthTotal: total,
-      averageDaily: Math.trunc(total / daysInMonth.length),
+      averageDaily: Math.trunc(total / mtdLength),
     };
-  }, [daysInMonth, dailySums]);
+  }, [daysInMonth, dailySums, today]);
 
   // Today into view
   const todayRef = useRef<HTMLTableCellElement>(null);
@@ -241,6 +242,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
         todayRef.current.scrollIntoView({
           behavior: "smooth",
           inline: "center",
+          block: "end",
         });
       }
     });
@@ -292,19 +294,22 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
           </Popover>
         </div>
       </div>
-      <div id="sectionContent-Stats" className="grid grid-cols-9 gap-6 w-full">
+      <div
+        id="sectionContent-Stats"
+        className="grid grid-cols-9 max-[1700px]:grid-cols-10 max-[1280px]:grid-cols-none gap-6 w-full"
+      >
         <div
           id="leftContent-Stats"
-          className="col-span-5 h-fit flex flex-col gap-4 "
+          className="col-span-5 max-[1700px]:col-span-6 w-full flex flex-col gap-4 "
         >
           <div
             id="cardTop"
-            className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 gap-3 items-start"
+            className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 justify-between items-start"
           >
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
                 <ColoredStats
-                  label="Thu nhập tháng"
+                  label="Thu nhập"
                   value={currentIncome}
                   type={StatsColor.green}
                   Icon={CircleChevronUp}
@@ -320,7 +325,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   }
                 >
                   <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
-                    <div className="w-full flex px-6 py-5 justify-between items-center">
+                    <div className="w-full flex px-6 py-6 justify-between items-center">
                       <Drawer.Title className="font-semibold text-xl text-slate-800">
                         Điều chỉnh thu nhập
                         <span className="text-slate-500 ml-3 font-normal text-lg">
@@ -335,7 +340,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
-                    <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
+                    <div className="w-full h-full flex flex-col gap-5 px-6">
                       <ul className="w-full flex flex-col gap-2">
                         {incomeList.map((income) => (
                           <li
@@ -372,9 +377,9 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
               </Drawer.Portal>
             </Drawer.Root>
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
                 <ColoredStats
-                  label="Hóa đơn tháng"
+                  label="Hóa đơn"
                   value={currentBilling}
                   type={StatsColor.red}
                   Icon={CircleChevronDown}
@@ -390,7 +395,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   }
                 >
                   <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
-                    <div className="w-full flex px-6 py-5 justify-between items-center">
+                    <div className="w-full flex px-6 py-6 justify-between items-center">
                       <Drawer.Title className="font-semibold text-xl text-slate-800">
                         Điều chỉnh hóa đơn tháng
                         <span className="text-slate-500 ml-3 font-normal text-lg">
@@ -405,7 +410,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                         <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
-                    <div className="w-full h-full flex flex-col gap-5 px-6 py-5">
+                    <div className="w-full h-full flex flex-col gap-5 px-6">
                       <ul className="w-full flex flex-col gap-2">
                         {billingList.map((billing) => (
                           <li
@@ -457,31 +462,36 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
           </div>
           <div id="rowBottom" className="w-full flex gap-4 shrink-0">
             <BalanceCard
-              mainStat={0}
-              subStat1={0}
-              subStat2={0}
               type={CardType.Tertiary}
-              cardTitle="Trích tiết kiệm"
-              subLabel1="% Tổng thu nhập"
-              subLabel2="Lần trích"
+              cardTitle="Tổng đã chi"
+              mainStat={monthlyData.monthTotal}
+              subLabel="Bình quân chi"
+              subStat={monthlyData.averageDaily}
             />
             <BalanceCard
+              type={CardType.Primary}
+              cardTitle="Số dư hiện tại"
               mainStat={
                 currentIncome +
                 leftover -
                 currentBilling -
                 monthlyData.monthTotal
               }
-              subStat1={monthlyData.monthTotal}
-              subStat2={monthlyData.averageDaily}
-              type={CardType.Primary}
-              cardTitle="Số dư hiện tại"
-              subLabel1="Đã chi"
-              subLabel2="Bình quân ngày"
+              subLabel="Được phép chi tối đa"
+              subStat={
+                (currentIncome +
+                  leftover -
+                  currentBilling -
+                  monthlyData.monthTotal) /
+                (daysInMonth.length - today.getDate())
+              }
             />
           </div>
         </div>
-        <div id="rightContent-Stats" className="col-span-4 h-full">
+        <div
+          id="rightContent-Stats"
+          className="col-span-4 h-full max-[1280px]:hidden"
+        >
           <MonthExpenseChart data={monthlyData.chartData} />
         </div>
       </div>
@@ -495,9 +505,12 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                     ref={isSameDay(day, today) ? todayRef : null}
                     key={format(day, "yyyy-MM-dd")}
                     className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-24 h-8 sticky top-0 z-10 justify-start ${
-                      isSameDay(day, today)
-                        ? "bg-gradient-to-b from-qik-ter-500 to-qik-pri-500 text-white font-semibold"
-                        : "bg-white"
+                      isSameDay(day, today) &&
+                      "bg-gradient-to-b from-qik-ter-500 to-qik-pri-500 text-white font-semibold border-b-qik-pri-400"
+                    }
+                    ${
+                      (day.getDay() === 6 || day.getDay() === 0) &&
+                      "bg-slate-100"
                     }`}
                   >
                     {format(day, "dd/MM")}
@@ -524,10 +537,16 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                           expense
                             ? "text-slate-800 font-medium"
                             : "text-slate-300 font-normal"
-                        } ${isSameDay(day, today) ? "bg-qik-pri-100" : ""}`}
+                        } ${isSameDay(day, today) && "bg-qik-pri-100"}
+                        ${
+                          (day.getDay() === 6 || day.getDay() === 0) &&
+                          !isSameDay(day, today)
+                            ? "bg-slate-50"
+                            : ""
+                        }`}
                       >
                         {expense ? (
-                          <span>
+                          <span className="animate-numEntry">
                             {"-"}
                             {formatNumber(expense.amount)}
                             <span className="text-slate-400">,000</span>
@@ -559,7 +578,14 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                       key={`${dateStr}-sum`}
                       className={`p-2 pb-5 text-left text-sm h-10 w-24 bottom-0 font-bold ${
                         daySum === 0 ? "text-slate-300" : "text-slate-800"
-                      } ${isSameDay(day, today) ? "bg-qik-pri-100" : ""}`}
+                      } ${isSameDay(day, today) && "bg-qik-pri-100"}
+                      ${
+                        (day.getDay() === 6 || day.getDay() === 0) &&
+                        !isSameDay(day, today)
+                          ? "bg-slate-50"
+                          : ""
+                      } 
+                      `}
                     >
                       {daySum === 0 ? (
                         <span>0</span>

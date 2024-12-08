@@ -11,7 +11,8 @@ export const authOptions: NextAuthOptions = {
               session.user.id = user.id;
             }
             return session;
-    }},
+        }
+    },
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -20,6 +21,22 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         strategy: "jwt"
+    },
+    events: {
+        async createUser({ user }) {
+            const defaultCategories = await prisma.category.findMany({
+              where: { userID: "global-user" },
+            });
+        
+            for (const category of defaultCategories) {
+              await prisma.category.create({
+                data: {
+                  title: category.title,
+                  userID: user.id,
+                },
+              });
+            }
+        },
     }
 }
 

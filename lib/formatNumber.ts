@@ -1,3 +1,4 @@
 export const formatNumber = (number: number): string => {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const roundedNumber = Math.round(number)
+    return roundedNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };

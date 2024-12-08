@@ -2,16 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import UserCard from "../userCard/UserCard";
+import { usePathname } from "next/navigation";
+import UserCard from "@/components/ui/custom/userCard/UserCard";
 import { useSession } from "next-auth/react";
 import { User } from "lucide-react";
-import { Button } from "../../button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
+import { Separator } from "@/components/ui/separator";
 
 const Header = () => {
   const { status, data: session } = useSession();
@@ -20,17 +28,81 @@ const Header = () => {
     session?.user.email,
     session?.user.image,
   ];
+  const pathName = usePathname();
 
   return (
     <div className="w-full max-w-[1840px] my-6 flex self-center justify-between px-5 py-2 bg-white rounded-xl items-center shadow-qele-panel">
-      <Image
-        src="/image/logo-lg.png"
-        alt="logo"
-        width={40}
-        height={40}
-        className="w-10 h-10"
-      />
-      <div id="rightBtnsGroup">
+      <div id="leftBtnsGroup" className="flex gap-3 items-center">
+        <Image
+          src="/image/logo-lg.webp"
+          alt="logo"
+          width={44}
+          height={44}
+          className=""
+        />
+        <Separator orientation="vertical" className="h-11" />
+        <NavigationMenu className="pt-1">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link href="/" passHref legacyBehavior>
+                <NavigationMenuLink
+                  className={`${
+                    pathName === "/" && "text-slate-900 bg-slate-200"
+                  } gap-1 inline-flex h-auto w-max items-center justify-center rounded-md px-2 py-1 text-base text-slate-500 font-medium transition-colors hover:bg-slate-100 hover:text-slate-600 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-slate-100/50 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 dark:focus:bg-slate-800 dark:focus:text-slate-50`}
+                >
+                  {pathName === "/" ? (
+                    <Image
+                      src="/svg/navItem_InOut.svg"
+                      alt="illus"
+                      width={36}
+                      height={36}
+                      className=""
+                    />
+                  ) : (
+                    <Image
+                      src="/svg/navItem_InOut_Inactive.svg"
+                      alt="illus"
+                      width={36}
+                      height={36}
+                      className=""
+                    />
+                  )}
+                  Dòng tiền
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/summary" passHref legacyBehavior>
+                <NavigationMenuLink
+                  className={`${
+                    pathName === "/summary" && "text-slate-800 bg-slate-200"
+                  } gap-1 inline-flex h-auto w-max items-center justify-center rounded-md px-2 py-1 text-base text-slate-500 font-medium transition-colors hover:bg-slate-100 hover:text-slate-600 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-slate-100/50 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 dark:focus:bg-slate-800 dark:focus:text-slate-50`}
+                >
+                  {pathName === "/summary" ? (
+                    <Image
+                      src="/svg/navItem_Summary.svg"
+                      alt="illus"
+                      width={36}
+                      height={36}
+                      className=""
+                    />
+                  ) : (
+                    <Image
+                      src="/svg/navItem_Summary_Inactive.svg"
+                      alt="illus"
+                      width={36}
+                      height={36}
+                      className=""
+                    />
+                  )}
+                  Tổng quan
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+      <div id="rightBtnsGroup" className="flex gap-3 items-center">
         {status === "loading" && (
           <span className="h-full flex items-center">Loading...</span>
         )}

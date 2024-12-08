@@ -1,11 +1,10 @@
 import React from "react";
-import { Button } from "../../button";
-import { Input } from "../../input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { revalidateExpenses } from "@/app/actions";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 interface Props {
   currentMonth: Date;

@@ -52,9 +52,28 @@ const config: Config = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		  boxShadow: {
+		boxShadow: {
 			'qele-panel': '0px 2px 20px 0px rgba(98, 98, 98, 0.08), 0px 1px 8px 0px rgba(98, 98, 98, 0.06)',
 			'qele-drawer': '0px 2px 24px 1px rgba(98, 98, 98, 0.10), 0px 1px 10px 1px rgba(98, 98, 98, 0.06'				
+		},
+		keyframes: {
+			numEntry: {
+				'0%': {
+					transform: 'translate(0, -50%)',
+					opacity: '0%'
+				},
+				'70%': {
+					transform: 'translate(0, 30%)',
+					opacity: '100%'
+				},
+				'100%': {
+					transform: 'translate(0, 0)',
+					opacity: '100%'
+				}
+			}
+		},
+		animation: {
+			numEntry: 'numEntry 300ms ease-in-out',
 		}
   	}
   },

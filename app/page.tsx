@@ -21,6 +21,9 @@ export default async function Home() {
   const billing = await prisma.billing.findMany({
     where: { userID: currentUserID },
   });
+  const category = await prisma.category.findMany({
+    where: { userID: currentUserID },
+  });
 
   return (
     <div
@@ -42,7 +45,7 @@ export default async function Home() {
             <div id="interactGroup-Logger" className="flex gap-2"></div>
           </div>
           <div id="sectionContent-Logger" className="flex w-full">
-            <QikLogger />
+            <QikLogger categories={category} />
           </div>
         </div>
       </div>

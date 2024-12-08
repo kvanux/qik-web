@@ -51,7 +51,12 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
         const newExpense = await prisma.expense.create({ 
-            data: { amount: body.amount, date: body.date, userID: currentUserID } 
+            data: { 
+                amount: body.amount, 
+                date: body.date, 
+                userID: currentUserID,
+                categoryID: Number(body.categoryID) || null
+            } 
         });
 
         const year = newExpense.date.getFullYear();
