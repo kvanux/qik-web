@@ -48,12 +48,10 @@ interface DataProps {
 }
 
 const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
-  // Get current day
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [maxCells, setMaxCells] = useState<number>(8);
 
-  // Get days
   const daysInMonth = useMemo(() => {
     const year = selectedMonth.getFullYear();
     const month = selectedMonth.getMonth();
@@ -67,7 +65,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return days;
   }, [selectedMonth]);
 
-  // Adjust month for parsing to ISO
   const adjustSelectedMonth = useMemo(() => {
     const adjustedMonth = new Date(
       selectedMonth.getFullYear(),
@@ -79,7 +76,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     else return selectedMonth;
   }, [selectedMonth, today]);
 
-  // Compute Leftover
   const getLeftoverMonth = useMemo(() => {
     if (selectedMonth.getMonth() === 0) {
       return {
@@ -111,7 +107,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     fetchBalance();
   }, [getLeftoverMonth]);
 
-  // Delete handler
   const deleteExpense = async function (expenseId: number) {
     try {
       const response = await fetch(`/api/expense?id=${expenseId}`, {
@@ -149,7 +144,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     }
   };
 
-  // Compute expense
   const expensesByDate = useMemo(() => {
     const grouped: { [key: string]: Expense[] } = {};
 
@@ -167,7 +161,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return grouped;
   }, [daysInMonth, expenses, maxCells]);
 
-  // Compute income
   const incomeList = useMemo(() => {
     const filterIncome = income.filter(
       (income) => income.month.getMonth() === selectedMonth.getMonth()
@@ -183,7 +176,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return incomeSum;
   }, [income, incomeList]);
 
-  //  Compute billing
   const billingList = useMemo(() => {
     const filterBilling = billing.filter(
       (billing) => billing.month.getMonth() === selectedMonth.getMonth()
@@ -202,7 +194,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return billingSum;
   }, [billingList, billing]);
 
-  // Calculate daily sums
   const dailySums = useMemo(() => {
     const sums: { [key: string]: number } = {};
     Object.entries(expensesByDate).forEach(([date, dayExpenses]) => {
@@ -211,7 +202,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     return sums;
   }, [expensesByDate]);
 
-  // Calculate month aggregation
   const monthlyData = useMemo(() => {
     const chartData = daysInMonth.map((day) => {
       const dateStr = format(day, "yyyy-MM-dd");
@@ -233,7 +223,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     };
   }, [daysInMonth, dailySums, today]);
 
-  // Today into view
   const todayRef = useRef<HTMLTableCellElement>(null);
 
   useEffect(() => {
@@ -247,6 +236,9 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
       }
     });
   }, [daysInMonth, today]);
+
+  const maxMonth = new Date(2086, 0);
+  const minMonth = new Date(2000, 0);
 
   return (
     <div id="section-Data" className="flex flex-col gap-4 w-full">
@@ -289,6 +281,8 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                     )
                   )
                 }
+                maxDate={maxMonth}
+                minDate={minMonth}
               />
             </PopoverContent>
           </Popover>
@@ -504,7 +498,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   <TableHead
                     ref={isSameDay(day, today) ? todayRef : null}
                     key={format(day, "yyyy-MM-dd")}
-                    className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-24 h-8 sticky top-0 z-10 justify-start ${
+                    className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-32 h-8 sticbetweenp-0 z-10 justify-start ${
                       isSameDay(day, today) &&
                       "bg-gradient-to-b from-qik-ter-500 to-qik-pri-500 text-white font-semibold border-b-qik-pri-400"
                     }
@@ -533,7 +527,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                             ? `${dateStr}-${expense.id}`
                             : `${dateStr}-${rowIndex}`
                         }
-                        className={`group p-2 text-left text-sm h-10 w-24 justify-start items-center transition-all duration-500 flex ${
+                        className={`group py-2 pl-2 pr-0 text-left text-sm h-10 w-32 justify-between items-center transition-all duration-500 flex ${
                           expense
                             ? "text-slate-800 font-medium"
                             : "text-slate-300 font-normal"
@@ -559,7 +553,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                             variant="ghost"
                             size="icon"
                             onClick={() => deleteExpense(expense.id)}
-                            className="hidden group-hover:flex transition-all duration-500 shrink-0 hover:bg-white shadow-[0px_0px_28px_#ffffff]"
+                            className="hidden group-hover:flex transition-all duration-300 shrink-0 hover:bg-rose-100"
                           >
                             <Trash2 className="w-5 h-5 text-red-800" />
                           </Button>
@@ -576,7 +570,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   return (
                     <TableCell
                       key={`${dateStr}-sum`}
-                      className={`p-2 pb-5 text-left text-sm h-10 w-24 bottom-0 font-bold ${
+                      className={`p-2 pb-5 text-left text-sm h-10 w-32 bottom-0between-bold ${
                         daySum === 0 ? "text-slate-300" : "text-slate-800"
                       } ${isSameDay(day, today) && "bg-qik-pri-100"}
                       ${

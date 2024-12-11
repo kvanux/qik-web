@@ -84,7 +84,6 @@ const QikLogger = ({ categories }: DataProps) => {
       });
 
       toast.success(`Nhập chi phí mới thành công`);
-      reset();
       await revalidateExpenses();
 
       return response.json();
