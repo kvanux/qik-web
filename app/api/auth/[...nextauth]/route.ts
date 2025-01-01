@@ -4,6 +4,10 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import prisma from "@/prisma/client"
 
 export const authOptions: NextAuthOptions = {
+    pages: {
+      signIn: '/auth/signin',
+      error: '/auth/error',
+    },
     adapter: PrismaAdapter(prisma),
     callbacks: {
         async session({ session, user }) {
@@ -11,7 +15,12 @@ export const authOptions: NextAuthOptions = {
               session.user.id = user.id;
             }
             return session;
-        }
+        },
+        async redirect({ url, baseUrl }) {
+          if (url.startsWith("/")) return `${baseUrl}${url}`
+          else if (new URL(url).origin === baseUrl) return url
+          return baseUrl
+        },
     },
     providers: [
         GoogleProvider({

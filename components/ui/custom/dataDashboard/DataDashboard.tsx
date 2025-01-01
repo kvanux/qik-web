@@ -3,7 +3,13 @@
 import React from "react";
 import { useState, useMemo } from "react";
 import { cn, yearList } from "@/lib/utils";
-import { Expense, Income, Billing } from "@prisma/client";
+import {
+  Expense,
+  Income,
+  Billing,
+  Category,
+  MonthlyBalance,
+} from "@prisma/client";
 import {
   Select,
   SelectContent,
@@ -11,26 +17,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import ExpenseHistogram from "@/components/ui/custom/expenseHistogram/ExpenseHistogram";
+import { YearChart } from "@/components/ui/custom/yearChart/YearChart";
+import CategoryChart from "@/components/ui/custom/categoryChart/CategoryChart";
+import InsightsCard from "@/components/ui/custom/insightsCard/InsightsCard";
 
 interface DataProps {
   expenses: Expense[];
-  income: Income[];
-  billing: Billing[];
+  incomes: Income[];
+  billings: Billing[];
+  balances: MonthlyBalance[];
+  categories: Category[];
 }
 
-const DataDashboard = ({ expenses, income, billing }: DataProps) => {
+const DataDashboard = ({
+  expenses,
+  incomes,
+  billings,
+  balances,
+  categories,
+}: DataProps) => {
   const currentYear = new Date().getFullYear();
-
   const [year, setYear] = useState(currentYear);
+  const expenseList = useMemo(() => {
+    const filterExpense = expenses.filter(
+      (expense) => expense.date.getFullYear() === year
+    );
+    return filterExpense;
+  }, [expenses, year]);
+  const incomeList = useMemo(() => {
+    const filterIncome = incomes.filter(
+      (income) => income.month.getFullYear() === year
+    );
+    return filterIncome;
+  }, [incomes, year]);
+  const billingList = useMemo(() => {
+    const filterBilling = billings.filter(
+      (billing) => billing.month.getFullYear() === year
+    );
+    return filterBilling;
+  }, [billings, year]);
+  const balanceList = useMemo(() => {
+    const filterBalance = balances.filter((balance) => balance.year === year);
+    filterBalance.push(
+      balances.find(
+        (balance) => balance.year === year - 1 && balance.month === 12
+      )!
+    );
+    return filterBalance;
+  }, [balances, year]);
 
-  const comboChartData = null;
-  const pieChartData = null;
+  const comboChartData = useMemo(() => {
+    const groups = Array.from({ length: 12 }, (_, i) => {
+      const inSum = incomeList
+        .filter((income) => income.month.getMonth() === i)
+        .reduce((sum, income) => sum + income.amount, 0);
+      const billingSum = billingList
+        .filter((billing) => billing.month.getMonth() === i)
+        .reduce((sum, billing) => sum + billing.amount, 0);
+      const expenseSum = expenseList
+        .filter((expense) => expense.date.getMonth() === i)
+        .reduce((sum, expense) => sum + expense.amount, 0);
+      const outSum = billingSum + expenseSum;
+      const leftover =
+        i === 0
+          ? balanceList.find(
+              (balance) => balance.year === year - 1 && balance.month === 12
+            )!.balance
+          : balanceList.find((balance) => balance.month === i) === undefined
+          ? 0
+          : balanceList.find((balance) => balance.month === i)!.balance;
+
+      const total = inSum - outSum + leftover;
+
+      return {
+        month: `Tháng ${i + 1}`,
+        green: inSum,
+        red: outSum,
+        line: total,
+      };
+    });
+
+    return groups;
+  }, [expenseList, incomeList, billingList, balanceList]);
 
   const histogramData = useMemo(() => {
-    if (!expenses || expenses.length === 0) {
+    if (!expenseList || expenseList.length === 0) {
       return [
         {
           x: "0",
@@ -38,12 +111,10 @@ const DataDashboard = ({ expenses, income, billing }: DataProps) => {
         },
       ];
     }
-
-    const maxAmount = expenses.reduce(
+    const maxAmount = expenseList.reduce(
       (max, expense) => Math.max(max, expense.amount),
       0
     );
-
     if (maxAmount === 0) {
       return [
         {
@@ -52,49 +123,150 @@ const DataDashboard = ({ expenses, income, billing }: DataProps) => {
         },
       ];
     }
-
     const columns: { label: string; amount: number }[] = [];
-
     for (let i = 0; i <= Math.floor(maxAmount / 100); i++) {
       columns.push({
         label: i.toString(),
         amount: 0,
       });
     }
-
-    expenses.forEach((expense) => {
+    expenseList.forEach((expense) => {
       const index = Math.floor(expense.amount / 100);
       if (index < columns.length) {
         columns[index].amount += 1;
       }
     });
 
-    console.log(maxAmount);
-
-    console.log(columns);
-
     return columns.map((column) => ({
       x: column.label,
       y: column.amount,
     }));
-  }, [expenses, currentYear]);
+  }, [expenseList]);
+
+  const pieChartData = useMemo(() => {
+    const groups: {
+      id: number | undefined;
+      label: string;
+      amount: number;
+      fill: string;
+    }[] = [
+      { id: undefined, label: "Không ghi rõ", amount: 0, fill: "#94A3B8" },
+    ];
+    const fillArray: string[] = [
+      "#69D9FF",
+      "#016FB9",
+      "#18F2B2",
+      "#6366F1",
+      "#A3E635",
+      "#F59E0B",
+      "#14B8A6",
+      "#0EA5E9",
+      "#8B5CF6",
+      "#D946EF",
+      "#F43F5E",
+      "#3B82F6",
+      "#EC4899",
+      "#22D3EE",
+      "#F97316",
+    ];
+    categories.forEach((category) => {
+      const loopCount = Math.floor(
+        categories.indexOf(category) / fillArray.length
+      );
+      groups.push({
+        id: category.id,
+        label: category.title,
+        amount: 0,
+        fill: fillArray[
+          categories.indexOf(category) - fillArray.length * loopCount
+        ],
+      });
+    });
+
+    expenseList.forEach((expense) => {
+      expense.categoryID === null
+        ? (groups[0].amount += 1)
+        : (groups.find((item) => item.id === expense.categoryID)!.amount += 1);
+    });
+
+    return groups;
+  }, [categories, expenseList]);
+
+  const insights = useMemo(() => {
+    const groups: {
+      type: string;
+      title: string;
+      content: string;
+    }[] = [];
+
+    for (let i = 0; i <= 11; i++) {
+      const expSum = expenseList
+        .filter((expense) => expense.date.getMonth() === i)
+        .reduce((sum, expense) => sum + expense.amount, 0);
+      const billSum = billingList
+        .filter((billing) => billing.month.getMonth() === i)
+        .reduce((sum, billing) => sum + billing.amount, 0);
+      const inSum = incomeList
+        .filter((income) => income.month.getMonth() === i)
+        .reduce((sum, income) => sum + income.amount, 0);
+
+      // render severe
+      expSum + billSum > inSum &&
+        groups.push({
+          type: "severe",
+          title: "Chi phí vượt mức",
+          content: `Tổng chi phí và hoá đơn trong tháng ${
+            i + 1
+          } cao hơn tổng thu nhập tháng.`,
+        });
+      billSum / inSum > 0.7 &&
+        groups.push({
+          type: "warning",
+          title: "Hóa đơn quá cao",
+          content: `Tổng hoá đơn tháng ${i + 1} chiếm đến ${
+            billSum / inSum
+          }% tổng thu nhập.`,
+        });
+
+      // render warning
+      billSum / inSum > 0.4 &&
+        billSum / inSum <= 0.7 &&
+        groups.push({
+          type: "warning",
+          title: "Hóa đơn quá cao",
+          content: `Tổng hoá đơn tháng ${i + 1} chiếm đến ${Math.floor(
+            (billSum / inSum) * 100
+          )}% tổng thu nhập.`,
+        });
+
+      // render success
+      (billSum + expSum) / inSum < 0.8 &&
+        groups.push({
+          type: "success",
+          title: `Tháng ${i + 1} xuất sắc`,
+          content: `Bạn tiết kiệm được hơn 20% tổng thu nhập tháng.`,
+        });
+
+      // render recommend
+    }
+
+    // render info
+    groups.length === 0 &&
+      groups.push({
+        type: "info",
+        title: "Chưa có phân tích mới",
+        content: "",
+      });
+
+    return groups;
+  }, [expenseList, incomeList, billingList, balanceList]);
 
   return (
     <div className="grid grid-cols-12 gap-6 w-full h-full max-w-[1840px] self-center">
-      <div className="col-span-3 flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
-        <div className="w-full flex h-10 gap-3 items-center">
-          <h2 className="text-xl font-semibold text-neutral-800 w-full">
-            Phân tích tổng quan
-          </h2>
-          <Separator orientation="vertical" className="h-7" />
-          <p className="text-slate-500 text-base font-medium">{year}</p>
-        </div>
-        <div className="flex w-full">Insights Cards go here...</div>
-      </div>
-      <div className="flex flex-col h-full gap-6 col-span-9">
-        <div className="h-full w-full flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
+      <div className="flex flex-col h-full gap-6 col-span-9 bg-white rounded-xl p-5 shadow-qele-panel">
+        <div className="h-full w-full flex flex-col gap-3">
           <div className="w-full flex h-10 justify-between items-center">
-            <h2 className="text-xl font-semibold text-neutral-800 w-full">
+            <h2 className="text-xl font-semibold text-slate-800 w-full">
               Tài chính theo năm
             </h2>
             <Select
@@ -115,31 +287,50 @@ const DataDashboard = ({ expenses, income, billing }: DataProps) => {
               </SelectContent>
             </Select>
           </div>
-          <div>Combo Chart goes here...</div>
+          <div>
+            <YearChart data={comboChartData}></YearChart>
+          </div>
         </div>
         <div className="h-full w-full flex gap-6">
-          <div className="h-full w-full flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
+          <div className="h-full w-full flex flex-col gap-5">
             <div className="w-full flex h-10 gap-3 items-center">
-              <h2 className="text-xl font-semibold text-neutral-800 w-full">
+              <h2 className="text-lg font-medium text-slate-800 w-full">
                 Phân lượng chi tiêu
               </h2>
-              <Separator orientation="vertical" className="h-7" />
-              <p className="text-slate-500 text-base font-medium">{year}</p>
             </div>
             <div className="flex w-full">
               <ExpenseHistogram data={histogramData} />
             </div>
           </div>
-          <div className="h-full w-full flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
+          <div className="h-full w-full flex flex-col gap-5">
             <div className="w-full flex h-10 gap-3 items-center">
-              <h2 className="text-xl font-semibold text-neutral-800 w-full">
+              <h2 className="text-lg font-medium text-slate-800 w-full">
                 Phân loại chi tiêu
               </h2>
-              <Separator orientation="vertical" className="h-7" />
-              <p className="text-slate-500 text-base font-medium">{year}</p>
             </div>
-            <div className="flex w-full">Pie Chart goes here...</div>
+            <div className="flex w-full">
+              <CategoryChart data={pieChartData} />
+            </div>
           </div>
+        </div>
+      </div>
+      <div className="col-span-3 h-[800px] flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
+        <div className="w-full flex h-10 gap-3 items-center">
+          <h2 className="text-xl font-semibold text-neutral-800 w-full">
+            Phân tích tổng quan
+          </h2>
+          <Separator orientation="vertical" className="h-7" />
+          <p className="text-slate-500 text-base">{year}</p>
+        </div>
+        <div className="flex flex-col gap-3 w-full h-full overflow-scroll">
+          {insights.map((insight) => (
+            <InsightsCard
+              key={insights.indexOf(insight)}
+              type={insight.type}
+              title={insight.title}
+              content={insight.content}
+            />
+          ))}
         </div>
       </div>
     </div>

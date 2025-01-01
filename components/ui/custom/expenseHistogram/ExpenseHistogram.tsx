@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   TooltipProps,
+  Brush,
 } from "recharts";
 import {
   NameType,
@@ -24,13 +25,9 @@ interface HistogramProps {
   height?: number;
 }
 
-const Histogram: React.FC<HistogramProps> = ({
-  data,
-  width = 800,
-  height = 400,
-}) => {
+const Histogram: React.FC<HistogramProps> = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ResponsiveContainer width="100%" height={312}>
       <BarChart
         data={data}
         margin={{
@@ -39,6 +36,8 @@ const Histogram: React.FC<HistogramProps> = ({
           left: 0,
           bottom: 30,
         }}
+        barGap={0}
+        barCategoryGap={0}
       >
         <CartesianGrid vertical={false} stroke="#E2E8F0" />
         <YAxis
@@ -48,14 +47,15 @@ const Histogram: React.FC<HistogramProps> = ({
           tickLine={false}
           axisLine={false}
           allowDecimals={false}
-          width={24}
+          width={48}
         />
         <Tooltip
+          cursor={{ fill: "#EBFAFF" }}
           content={({ active, payload }: TooltipProps<ValueType, NameType>) => {
             if (active && payload && payload.length) {
               const data = payload[0].payload;
               return (
-                <div className="rounded-lg bg-white/90 p-3 shadow-sm">
+                <div className="rounded-lg bg-white/95 p-3 shadow-sm">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-normal text-slate-500 uppercase text-muted-foreground">
                       {data.x === 0
@@ -66,8 +66,9 @@ const Histogram: React.FC<HistogramProps> = ({
                             (parseInt(data.x) + 1) * 100000
                           )}đ`}
                     </span>
-                    <span className="font-medium text-muted-foreground text-slate-800 text-base">
-                      Số lần chi: {formatNumber(payload[0].value as number)}
+                    <span className="font-medium text-muted-foreground text-slate-700 text-base">
+                      <span className="font-normal">Số lần chi: </span>
+                      {payload[0].value}
                     </span>
                   </div>
                 </div>
@@ -77,6 +78,7 @@ const Histogram: React.FC<HistogramProps> = ({
           }}
         />
         <Bar dataKey="y" fill="#016FB9" radius={[4, 4, 0, 0]} />
+        {/* <Brush stroke="#CBD5E1" radius={4} /> */}
       </BarChart>
     </ResponsiveContainer>
   );

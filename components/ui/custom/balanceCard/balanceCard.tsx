@@ -86,9 +86,11 @@ const BalanceCard = ({
             {":"}
           </span>
           <span className="font-semibold text-base text-white">
-            {formatNumber(subStat)}
-            {subStat != 0 && <span className="text-white/60">,000</span>}
-            {subStat != 0 && <span>/ngày</span>}
+            {isNaN(subStat) || subStat === 0 ? "--" : formatNumber(subStat)}
+            {subStat != 0 && !isNaN(subStat) && (
+              <span className="text-white/60">,000</span>
+            )}
+            {subStat != 0 && !isNaN(subStat) && <span>/ngày</span>}
           </span>
         </div>
       </div>

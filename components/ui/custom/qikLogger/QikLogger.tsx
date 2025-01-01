@@ -157,6 +157,8 @@ const QikLogger = ({ categories }: DataProps) => {
               }
             }}
             initialFocus
+            defaultMonth={date}
+            ISOWeek
           />
         </PopoverContent>
       </Popover>

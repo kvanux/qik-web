@@ -12,7 +12,7 @@ export default async function SummaryPage() {
   });
   const currentUserID = currentUser?.id;
 
-  const expenses = await prisma.expense.findMany({
+  const expense = await prisma.expense.findMany({
     where: { userID: currentUserID },
   });
   const income = await prisma.income.findMany({
@@ -21,12 +21,20 @@ export default async function SummaryPage() {
   const billing = await prisma.billing.findMany({
     where: { userID: currentUserID },
   });
+  const category = await prisma.category.findMany({
+    where: { userID: currentUserID },
+  });
+  const balance = await prisma.monthlyBalance.findMany({
+    where: { userID: currentUserID },
+  });
 
   return (
     <DataDashboard
-      expenses={expenses}
-      income={income}
-      billing={billing}
+      expenses={expense}
+      incomes={income}
+      billings={billing}
+      categories={category}
+      balances={balance}
     ></DataDashboard>
   );
 }

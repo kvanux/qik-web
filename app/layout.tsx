@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/ui/custom/header/Header";
-import { Inter, Manrope } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner";
-import Footer from "@/components/ui/custom/footer/Footer";
 import AuthProvider from "./auth/Provider";
+import { Inter, Manrope } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,21 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AuthProvider>
-        <body
-          className={`${inter.variable} font-[inter] antialiased flex flex-col justify-center px-10`}
-        >
-          <Header />
-          {children}
-          <Toaster
-            richColors
-            closeButton
-            theme="light"
-            position="bottom-left"
-          />
-          <Footer />
-        </body>
-      </AuthProvider>
+      <body className={`${inter.variable} ${manrope.variable} font-[inter]`}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

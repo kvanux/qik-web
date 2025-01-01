@@ -20,6 +20,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
+import { signOut } from "next-auth/react";
 
 const Header = () => {
   const { status, data: session } = useSession();
@@ -120,12 +121,18 @@ const Header = () => {
                 asChild
                 className="hover:cursor-pointer hover:bg-slate-100"
               >
-                <Link
+                {/* <Link
                   href="/api/auth/signout"
-                  className="text-slate-900 font-medium"
                 >
                   Sign Out
-                </Link>
+                </Link> */}
+                <Button
+                  variant="ghost"
+                  className="w-full text-slate-900 font-medium"
+                  onClick={() => signOut()}
+                >
+                  Đăng xuất
+                </Button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -134,11 +141,10 @@ const Header = () => {
           <Button asChild variant="outline">
             <User className="text-slate-700" />
             <Link href="/api/auth/signin" className="text-slate-900">
-              Sign In
+              Đăng nhập/Đăng ký
             </Link>
           </Button>
         )}
-        {/* <ChevronDown className="text-slate-700 transition duration-300 ease-in-out group-open:rotate-180" /> */}
       </div>
     </div>
   );

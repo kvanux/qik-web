@@ -54,8 +54,8 @@ model MonthlyBalance {
   user      User     @relation(fields: [userID], references: [id], onDelete: Cascade)
   userID    String
 
-  @@unique([year, month])
-  @@index([year, month])
+  @@unique([year, month, userID])
+  @@index([year, month, userID])
 }
 
 model Category {

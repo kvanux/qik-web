@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
     const searchParams = new URL(request.url).searchParams;
     const year = parseInt(searchParams.get('year') || '');
     const month = parseInt(searchParams.get('month') || '');
+    const userID = searchParams.get('userID');
 
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -41,42 +42,60 @@ export async function GET(request: NextRequest) {
         
         const prevBalance = await prisma.monthlyBalance.findUnique({
             where: {
-                year_month: { year: prevYear, month: prevMonth }
+                year_month_userID: { year: prevYear, month: prevMonth, userID: userID as string}
             }
         });
 
         // Get current month's transactions
-        const startOfMonth = new Date(year, month - 1, 1);
-        const endOfMonth = new Date(year, month, 0);
+        const startOfMonth = new Date(year, month - 1, 2);
+        const endOfMonth = new Date(year, month);
 
         const [income, expenses, billing] = await Promise.all([
             prisma.income.aggregate({
                 where: {
-                    month: {
-                        gte: startOfMonth,
-                        lte: endOfMonth
-                    },
-                    userID: currentUserID
+                    AND: [
+                        {
+                            month: {
+                                gte: startOfMonth,
+                                lte: endOfMonth
+                            },
+                        },
+                        {
+                            userID: userID as string
+                        }
+                    ]
                 },
                 _sum: { amount: true }
             }),
             prisma.expense.aggregate({
                 where: {
-                    date: {
-                        gte: startOfMonth,
-                        lte: endOfMonth
-                    },
-                    userID: currentUserID
+                    AND: [
+                        {
+                            date: {
+                                gte: startOfMonth,
+                                lte: endOfMonth
+                            },
+                        },
+                        {
+                            userID: userID as string
+                        }
+                    ]
                 },
                 _sum: { amount: true }
             }),
             prisma.billing.aggregate({
                 where: {
-                    month: {
-                        gte: startOfMonth,
-                        lte: endOfMonth
-                    },
-                    userID: currentUserID
+                    AND: [
+                        {
+                            month: {
+                                gte: startOfMonth,
+                                lte: endOfMonth
+                            },
+                        },
+                        {
+                            userID: userID as string
+                        }
+                    ]
                 },
                 _sum: { amount: true }
             })
@@ -89,10 +108,10 @@ export async function GET(request: NextRequest) {
 
         const monthlyBalance = await prisma.monthlyBalance.upsert({
             where: {
-                year_month: { year: year, month: month}
+                year_month_userID: { year: year, month: month, userID: userID as string}
             },
             update: { balance },
-            create: { year: year, month: month, balance, userID: currentUserID as string }
+            create: { year: year, month: month, balance, userID: userID as string as string }
         });
 
         return NextResponse.json(monthlyBalance, { status: 200 });

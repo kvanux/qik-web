@@ -45,9 +45,15 @@ interface DataProps {
   expenses: Expense[];
   income: Income[];
   billing: Billing[];
+  currentUserId: string;
 }
 
-const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
+const ExpenseCalendar = ({
+  expenses,
+  income,
+  billing,
+  currentUserId,
+}: DataProps) => {
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [maxCells, setMaxCells] = useState<number>(8);
@@ -95,7 +101,7 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
   useEffect(() => {
     async function fetchBalance() {
       const response = await fetch(
-        `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}`,
+        `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}&userID=${currentUserId}`,
         { credentials: "include" }
       );
       if (!response.ok) throw new Error("Failed to fetch balance");
@@ -113,10 +119,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
         method: "DELETE",
       });
       await revalidateExpenses();
-      toast.info("Expense deleted.");
+      toast.info("Xóa thành công.");
       return response;
     } catch (error) {
-      toast.error("Failed to delete", { description: `${error}` });
+      toast.error("Có lỗi xảy ra.", { description: `${error}` });
     }
   };
   const deleteIncome = async function (incomeId: number) {
@@ -125,10 +131,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
         method: "DELETE",
       });
       await revalidateExpenses();
-      toast.info("Income deleted.");
+      toast.info("Xóa thành công.");
       return response;
     } catch (error) {
-      toast.error("Failed to delete", { description: `${error}` });
+      toast.error("Có lỗi xảy ra.", { description: `${error}` });
     }
   };
   const deleteBilling = async function (billingId: number) {
@@ -137,10 +143,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
         method: "DELETE",
       });
       await revalidateExpenses();
-      toast.info("Billing deleted.");
+      toast.info("Xóa thành công.");
       return response;
     } catch (error) {
-      toast.error("Failed to delete", { description: `${error}` });
+      toast.error("Có lỗi xảy ra.", { description: `${error}` });
     }
   };
 
@@ -163,7 +169,9 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
 
   const incomeList = useMemo(() => {
     const filterIncome = income.filter(
-      (income) => income.month.getMonth() === selectedMonth.getMonth()
+      (income) =>
+        income.month.getMonth() === selectedMonth.getMonth() &&
+        income.month.getFullYear() === selectedMonth.getFullYear()
     );
     return filterIncome;
   }, [selectedMonth, income]);
@@ -174,25 +182,24 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
       0
     );
     return incomeSum;
-  }, [income, incomeList]);
+  }, [incomeList]);
 
   const billingList = useMemo(() => {
     const filterBilling = billing.filter(
-      (billing) => billing.month.getMonth() === selectedMonth.getMonth()
+      (billing) =>
+        billing.month.getMonth() === selectedMonth.getMonth() &&
+        billing.month.getFullYear() === selectedMonth.getFullYear()
     );
     return filterBilling;
   }, [selectedMonth, billing]);
 
   const currentBilling = useMemo(() => {
-    const billingList = billing.filter(
-      (billing) => billing.month.getMonth() === selectedMonth.getMonth()
-    );
     const billingSum = billingList.reduce(
       (sum, billing) => sum + billing.amount,
       0
     );
     return billingSum;
-  }, [billingList, billing]);
+  }, [billingList]);
 
   const dailySums = useMemo(() => {
     const sums: { [key: string]: number } = {};
@@ -214,12 +221,15 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
     });
 
     const total = chartData.reduce((sum, item) => sum + item.amount, 0);
-    const mtdLength = today.getDate();
+    const dayAm =
+      today.getMonth() === selectedMonth.getMonth()
+        ? today.getDate()
+        : daysInMonth.length;
 
     return {
       chartData,
       monthTotal: total,
-      averageDaily: Math.trunc(total / mtdLength),
+      averageDaily: Math.trunc(total / dayAm),
     };
   }, [daysInMonth, dailySums, today]);
 
@@ -341,6 +351,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                             key={income.id}
                             className="flex gap-2 items-center pl-4"
                           >
+                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-32 animate-numEntry">
+                              {formatNumber(income.amount)}
+                              <span className="text-slate-400">,000</span>
+                            </span>
                             <span className="text-base font-medium text-slate-600 w-full">
                               {income.title}
                               {income.title == null && (
@@ -348,10 +362,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                                   Không ghi rõ
                                 </span>
                               )}
-                            </span>
-                            <span className="text-base font-medium text-slate-900 w-full">
-                              {formatNumber(income.amount)}
-                              <span className="text-slate-400">,000</span>
                             </span>
                             <Button
                               onClick={() => deleteIncome(income.id)}
@@ -411,6 +421,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                             key={billing.id}
                             className="flex gap-2 items-center pl-4"
                           >
+                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-32 animate-numEntry">
+                              {formatNumber(billing.amount)}
+                              <span className="text-slate-400">,000</span>
+                            </span>
                             <span className="text-base font-medium text-slate-600 w-full">
                               {billing.title}
                               {billing.title == null && (
@@ -418,10 +432,6 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                                   Không ghi rõ
                                 </span>
                               )}
-                            </span>
-                            <span className="text-base font-medium text-slate-900 w-full">
-                              {formatNumber(billing.amount)}
-                              <span className="text-slate-400">,000</span>
                             </span>
                             <Button
                               onClick={() => deleteBilling(billing.id)}
@@ -477,7 +487,9 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   leftover -
                   currentBilling -
                   monthlyData.monthTotal) /
-                (daysInMonth.length - today.getDate())
+                (today.getMonth() === selectedMonth.getMonth()
+                  ? daysInMonth.length - today.getDate()
+                  : daysInMonth.length)
               }
             />
           </div>
@@ -570,8 +582,10 @@ const ExpenseCalendar = ({ expenses, income, billing }: DataProps) => {
                   return (
                     <TableCell
                       key={`${dateStr}-sum`}
-                      className={`p-2 pb-5 text-left text-sm h-10 w-32 bottom-0between-bold ${
-                        daySum === 0 ? "text-slate-300" : "text-slate-800"
+                      className={`p-2 pb-5 text-left text-sm h-10 w-32 bottom-0between-bold animate-numEntry ${
+                        daySum === 0
+                          ? "text-slate-300"
+                          : "text-slate-800 font-semibold"
                       } ${isSameDay(day, today) && "bg-qik-pri-100"}
                       ${
                         (day.getDay() === 6 || day.getDay() === 0) &&

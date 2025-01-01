@@ -2,7 +2,7 @@ import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
 import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
 import prisma from "@/prisma/client";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -39,7 +39,7 @@ export default async function Home() {
             id="sectionTitle-Logger"
             className="w-full flex h-10 items-center"
           >
-            <h2 className="text-xl font-semibold text-neutral-800 w-full">
+            <h2 className="text-xl font-semibold text-slate-800 w-full">
               Chi phí mới
             </h2>
             <div id="interactGroup-Logger" className="flex gap-2"></div>
@@ -57,6 +57,7 @@ export default async function Home() {
           expenses={expenses}
           income={income}
           billing={billing}
+          currentUserId={currentUserID as string}
         ></ExpenseCalendar>
       </div>
     </div>

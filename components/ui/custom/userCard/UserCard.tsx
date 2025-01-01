@@ -8,7 +8,7 @@ interface UserInfo {
 }
 
 const UserCard = ({ name, email, avatar }: UserInfo) => {
-  const regex = /[\b(?=\w)]/;
+  const regex = /\b\w/g;
   const initials = name.match(regex);
   const initReduced = initials?.slice(0, 2);
   const avatarFallback = initReduced?.join("");
