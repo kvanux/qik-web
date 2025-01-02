@@ -70,10 +70,194 @@ const config: Config = {
 					transform: 'translate(0, 0)',
 					opacity: '100%'
 				}
-			}
+			},
+			m12: {
+				'0%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, -30%)'
+				},
+				'50%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, -60%)'
+				},
+				'75%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, -30%)'
+				},
+				'100%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+			},
+			m3: {
+				'0%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 10%)'
+				},
+				'50%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 20%)'
+				},
+				'75%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 10%)'
+				},
+				'100%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+			},
+			m4: {
+				'0%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 20%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 40%)'
+				},
+				'75%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 20%)'
+				},
+				'100%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+			},
+			m5: {
+				'0%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, -10%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, -20%)'
+				},
+				'75%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, -10%)'
+				},
+				'100%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+			},
+			s1: {
+				'0%': {
+					'background-color': "#016fb9",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 20%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 40%)'
+				},
+				'75%': {
+					'background-color': "#016fb9",
+					transform: 'translate(0, 20%)'
+				},
+				'100%': {
+					'background-color': "#016fb9",
+					transform: 'translate(0, 0)'
+				},
+			},
+			s2: {
+				'0%': {
+					'background-color': "#016fb9",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#016fb9",
+					transform: 'translate(-10%, -20%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(-20%, -40%)'
+				},
+				'75%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(-10%, -20%)'
+				},
+				'100%': {
+					'background-color': "#016fb9",
+					transform: 'translate(0, 0)'
+				},
+			},
+			s3: {
+				'0%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(10%, 20%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(20%, 40%)'
+				},
+				'75%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(10%, 20%)'
+				},
+				'100%': {
+					'background-color': "#18f2b2",
+					transform: 'translate(0, 0)'
+				},
+			},
+			s4: {
+				'0%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+				'25%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(20%, 20%)'
+				},
+				'50%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(30%, 30%)'
+				},
+				'75%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(20%, 20%)'
+				},
+				'100%': {
+					'background-color': "#69d9ff",
+					transform: 'translate(0, 0)'
+				},
+			},
 		},
 		animation: {
 			numEntry: 'numEntry 300ms ease-in-out',
+			m12: 'm12 4s linear infinite',
+			m3: 'm3 4s linear infinite',
+			m4: 'm4 4s linear infinite',
+			m5: 'm5 4s linear infinite',
+			s1: 's1 4s linear infinite',
+			s2: 's2 4s linear infinite',
+			s3: 's3 4s linear infinite',
+			s4: 's4 4s linear infinite',
 		}
   	}
   },
