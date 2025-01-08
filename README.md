@@ -1,32 +1,45 @@
-# QIK - Personal Finance Management Tool
+# QIK - Personal Finance Management Web App
 
-## Overview
+## Developed by Oliver Nguyen and the fantasy.tech team.
 
-Welcome to **QIK**! This free-to-use application is designed to help you manage your finances with ease, speed, and style. QIK emphasizes quick interaction and high performance while providing a beautifully designed user experience.
+Effortlessly visualize and manage your cash flow with **QIK**, a streamlined and user-friendly finance app designed for quick interactions and high performance.
 
-## Features
+---
 
-- **Logger (Homescreen)**:
+## Key Features
 
-  - Input and view your expenses effortlessly.
-  - View stats in Table and Chart formats.
-  - Monthly and current stats for comprehensive tracking.
-  - Special input options for unique categorization.
-  - Tags Manager for better organization.
-  - ML-powered assistant for smart insights.
+- **Expense Input**: Quickly log daily expenses with an intuitive interface.
+- **Income & Billing Input**: Log recurring incomes and bills seamlessly.
+- **Current Stats**: See real-time stats into your financial standing and how you can spend moving forward.
+- **Expense Calendar**: Visualize your expenses on a calendar.
+- **Monthly Chart View**: Get graphical insights into your monthly expense.
+- **Monthly Stats**: View key financial statistics for the month.
+- **Categorization**: Organize your expenses into meaningful, customizable categories.
+- **Year Finance Trend Chart**: Track your financial trends over the year.
+- **Insights**: Gain actionable insights based on your spending patterns.
+- **Spending Distribution**: See a breakdown of your expenses by category.
+- **Category Distribution**: Compare spending across multiple categories.
 
-- **Fund Manager**:
+---
 
-  - Input deposits and withdrawals seamlessly.
-  - View current margins and totals.
-  - Recommendations based on your financial behavior.
+## Usage
 
-- **Summary**:
-  - Quarterly and yearly insights in Table and Chart formats.
-  - Trend analysis for informed decision-making.
+QIK is completely free to use, providing a simple and intuitive interface to manage your finances. Features like the calendar table and monthly stats ensure your financial overview is both detailed and visually appealing. Stay tuned for future updates and additional features!
+
+---
+
+## Contributing
+
+At this time, QIK does not accept public contributions. This ensures consistent quality and adherence to the app's vision. Feedback and suggestions are always welcome, and can be shared via [contact information or GitHub Issues].
+
+---
+
+## License
+
+This project is licensed under a **Proprietary License**. You are free to use and view the source code but are not permitted to modify, distribute, or create derivative works without explicit permission.
+
+---
 
 ## Contact
 
-For any questions or feedback, please reach out to [nkhanhvan293@gmail.com].
-
-Thank you for using QIK! We hope it helps you manage your finances effectively and beautifully.
+For feedback, support, or inquiries, please reach out to [nkhanhvan293@gmail.com].
