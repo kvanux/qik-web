@@ -4,20 +4,17 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useSearchParams } from "next/navigation";
 
 export default function SignIn() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const handleSignIn = (provider: string) => {
     signIn(provider, { callbackUrl: "/" });
   };
 
   return (
-    <div className="w-full h-[916px] flex p-8 justify-between">
-      <div className="w-[668px] h-full px-20 pt-24 pb-[72px] flex flex-col bg-white/50 border-[2.5px] border-slate-100/50 shadow-qele-drawer backdrop-blur-xl rounded-3xl">
+    <div className="w-full h-[916px] flex p-8 justify-between min-[360px]:max-[800px]:p-4 min-[360px]:max-[800px]:w-screen min-[360px]:max-[800px]:h-screen overflow-clip">
+      <div className="w-[668px] h-full px-20 pt-24 pb-[72px] flex flex-col bg-white/50 border-[2.5px] border-slate-100/50 shadow-qele-drawer backdrop-blur-xl rounded-3xl min-[360px]:max-[800px]:w-full min-[360px]:max-[800px]:px-6 min-[360px]:max-[800px]:pt-8 min-[360px]:max-[800px]:pb-6 max-[1366px]:w-[600px]">
         <div className="w-full h-full flex flex-col gap-8 ">
-          <div className="flex gap-6 items-center h-12">
+          <div className="flex gap-6 items-center h-12 max-[1366px]:justify-between max-[1366px]:gap-0">
             <Image
               src="/image/logo-lg.webp"
               width={48}
@@ -26,13 +23,16 @@ export default function SignIn() {
               className="flex-shrink-0"
               priority
             />
-            <Separator orientation="horizontal" className="w-56 bg-slate-200" />
+            <Separator
+              orientation="horizontal"
+              className="w-56 bg-slate-200 min-[360px]:max-[800px]:w-10 max-[1366px]:w-40"
+            />
             <p className="w-fit flex-shrink-0 text-slate-500 font-normal text-lg tracking-tight">
               Đăng nhập / Đăng ký
             </p>
           </div>
           <Button
-            className="p-4 w-full h-16 bg-[#f1f5f9]/70 border border-white/70 hover:bg-[#e5e8ec] rounded-xl"
+            className="p-4 w-full h-16 bg-[#f1f5f9]/70 border border-white/70 hover:bg-[#e5e8ec] rounded-xl min-[360px]:max-[800px]:h-12"
             onClick={() => handleSignIn("google")}
           >
             <div className="w-full flex gap-0 items-center ">
@@ -45,7 +45,7 @@ export default function SignIn() {
                 alt="google-logo"
                 priority
               />
-              <p className="w-full font-medium text-lg text-slate-700">
+              <p className="w-full font-medium text-lg text-slate-700 min-[360px]:max-[800px]:text-base">
                 Tiếp tục với Gmail
               </p>
             </div>
@@ -73,7 +73,7 @@ export default function SignIn() {
           </svg>
         </div>
       </div>
-      <div className="w-[564px] h-full flex-col justify-center items-end gap-7 inline-flex pr-8">
+      <div className="w-[564px] h-full flex-col justify-center items-end gap-7 inline-flex pr-8 min-[360px]:max-[800px]:hidden">
         <div className="w-[564px] text-right">
           <span className="text-[#013d65] text-6xl font-light font-[manrope] capitalize leading-[80px]">
             Bắt đầu hành trình{" "}
@@ -91,7 +91,7 @@ export default function SignIn() {
           ý thông minh, và hỗ trợ bạn xây dựng kế hoạch tài chính lâu dài.
         </div>
       </div>
-      <div className="w-full h-[800px] absolute top-[10%] left-0 right-0 -z-20">
+      <div className="w-full h-[800px] absolute top-[10%] left-0 right-0 -z-20 min-[360px]:max-[800px]:w-screen min-[360px]:max-[800px]:h-screen min-[360px]:max-[800px]:overflow-clip">
         <div
           id="m1"
           className="absolute top-[524px] left-[0px] w-[402.28px] h-[179.37px] bg-[#69d9ff] rounded-full blur-[320px] animate-m12"
@@ -135,7 +135,7 @@ export default function SignIn() {
         height="1024"
         viewBox="0 0 901 1024"
         fill="none"
-        className="absolute right-0 -top-12 h-[960px] overflow-clip -z-10"
+        className="absolute right-0 -top-12 h-[960px] overflow-clip -z-10 min-[360px]:max-[800px]:hidden"
       >
         <g opacity="0.2" filter="url(#filter0_b_2267_59820)">
           <path

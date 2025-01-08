@@ -19,7 +19,7 @@ const UserCard = ({ name, email, avatar }: UserInfo) => {
         <AvatarImage src={avatar as string} />
         <AvatarFallback>{avatarFallback}</AvatarFallback>
       </Avatar>
-      <div className="flex flex-col w-full items-start justify-center">
+      <div className="flex flex-col w-full items-start justify-center min-[360px]:max-[800px]:hidden">
         <p className="text-sm text-slate-900 font-semibold">{name}</p>
         <p className="text-xs text-slate-600 font-normal">{email}</p>
       </div>

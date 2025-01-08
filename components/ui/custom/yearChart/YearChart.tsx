@@ -34,11 +34,9 @@ export function YearChart({ data }: YearChartProps) {
       <ComposedChart
         data={data}
         margin={{
-          top: 20,
-          right: 20,
-          bottom: 20,
-          left: 20,
+          bottom: 0,
         }}
+        barGap={0}
       >
         <defs>
           <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
@@ -54,15 +52,28 @@ export function YearChart({ data }: YearChartProps) {
           type="number"
           allowDataOverflow
           hide
+          width={0}
         />
+        {screen.width > 800 && (
+          <XAxis
+            dataKey="month"
+            stroke="#64748B"
+            tickMargin={12}
+            fontSize={14}
+            height={20}
+            domain={["auto", "auto"]}
+            strokeWidth={minY < 0 ? 0 : 1}
+          />
+        )}
         <XAxis
           dataKey="month"
           stroke="#64748B"
-          tickMargin={12}
-          fontSize={14}
-          height={20}
+          tickMargin={0}
+          fontSize={12}
+          height={4}
           domain={["auto", "auto"]}
           strokeWidth={minY < 0 ? 0 : 1}
+          tick={false}
         />
         {minY < 0 && (
           <ReferenceLine
@@ -78,8 +89,11 @@ export function YearChart({ data }: YearChartProps) {
             if (active && payload && payload.length) {
               const data = payload[0].payload;
               return (
-                <div className="rounded-lg bg-white/95 p-3 shadow-sm">
+                <div className="rounded-lg bg-white/95 p-3 shadow-sm min-[360px]:max-[800px]:shadow-md">
                   <div className="flex flex-col gap-2">
+                    <span className="text-slate-600 font-medium">
+                      {data.month}
+                    </span>
                     <div className="w-56 flex justify-between">
                       <div className="flex gap-1 items-center">
                         <div className="w-3 h-3 rounded-sm mt-[2px] bg-qik-ter-600" />

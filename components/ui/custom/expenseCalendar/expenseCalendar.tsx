@@ -253,7 +253,7 @@ const ExpenseCalendar = ({
   return (
     <div id="section-Data" className="flex flex-col gap-4 w-full">
       <div id="sectionTitle-Data" className="w-full flex items-center">
-        <h2 className="text-xl font-semibold text-neutral-800 w-full">
+        <h2 className="text-xl font-semibold text-neutral-800 w-full min-[360px]:max-[800px]:text-lg">
           Dòng tiền
         </h2>
         <div id="interactGroup-Data" className="flex gap-2">
@@ -262,7 +262,7 @@ const ExpenseCalendar = ({
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-[280px] justify-start text-left font-normal text-base text-slate-900"
+                  "w-[280px] justify-start text-left font-normal text-base text-slate-900 min-[360px]:max-[800px]:w-32 min-[360px]:max-[800px]:text-sm"
                 )}
               >
                 <CalendarIcon className="h-4 w-4 text-slate-700" />
@@ -304,14 +304,14 @@ const ExpenseCalendar = ({
       >
         <div
           id="leftContent-Stats"
-          className="col-span-5 max-[1700px]:col-span-6 w-full flex flex-col gap-4 "
+          className="col-span-5 max-[1700px]:col-span-6 w-full flex flex-col gap-4 min-[360px]:max-[800px]:gap-2"
         >
           <div
             id="cardTop"
-            className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 justify-between items-start"
+            className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 justify-between items-start min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-2"
           >
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out min-[360px]:max-[800px]:w-full">
                 <ColoredStats
                   label="Thu nhập"
                   value={currentIncome}
@@ -321,18 +321,18 @@ const ExpenseCalendar = ({
               </Drawer.Trigger>
               <Drawer.Portal>
                 <Drawer.Content
-                  className="right-6 top-6 bottom-6 fixed z-10 outline-none w-[600px] flex"
+                  className="right-0 top-0 bottom-0 fixed z-10 outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12"
                   style={
                     {
                       "--initial-transform": "calc(100% + 8px)",
                     } as React.CSSProperties
                   }
                 >
-                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
-                    <div className="w-full flex px-6 py-6 justify-between items-center">
-                      <Drawer.Title className="font-semibold text-xl text-slate-800">
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none ">
+                    <div className="w-full flex px-8 pt-8 pb-6 justify-between items-center min-[360px]:max-[800px]:p-4 border-b border-slate-200">
+                      <Drawer.Title className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
                         Điều chỉnh thu nhập
-                        <span className="text-slate-500 ml-3 font-normal text-lg">
+                        <span className="text-slate-500 ml-3 font-normal text-lg min-[360px]:max-[800px]:text-sm">
                           {selectedMonth.toLocaleString("default", {
                             month: "2-digit",
                           })}
@@ -344,14 +344,14 @@ const ExpenseCalendar = ({
                         <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
-                    <div className="w-full h-full flex flex-col gap-5 px-6">
-                      <ul className="w-full flex flex-col gap-2">
+                    <div className="w-full h-full flex flex-col gap-5 px-8 pt-6 min-[360px]:max-[800px]:px-4 min-[360px]:max-[800px]:gap-4">
+                      <ul className="w-full flex flex-col gap-2 min-[360px]:max-[800px]:rounded-xl bg-white border-slate-200 border py-3 px-2 rounded-xl">
                         {incomeList.map((income) => (
                           <li
                             key={income.id}
-                            className="flex gap-2 items-center pl-4"
+                            className="flex gap-8 items-center pl-4 min-[360px]:max-[800px]:gap-4"
                           >
-                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-32 animate-numEntry">
+                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-fit min-w-24 animate-numEntry">
                               {formatNumber(income.amount)}
                               <span className="text-slate-400">,000</span>
                             </span>
@@ -381,7 +381,7 @@ const ExpenseCalendar = ({
               </Drawer.Portal>
             </Drawer.Root>
             <Drawer.Root direction="right">
-              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out">
+              <Drawer.Trigger className="hover:bg-slate-300 hover:shadow-[-4px_0px_0px_4px_#cbd5e1] shrink-0 cursor-pointer rounded-sm transition-all duration-300 ease-in-out min-[360px]:max-[800px]:w-full">
                 <ColoredStats
                   label="Hóa đơn"
                   value={currentBilling}
@@ -391,18 +391,18 @@ const ExpenseCalendar = ({
               </Drawer.Trigger>
               <Drawer.Portal>
                 <Drawer.Content
-                  className="right-6 top-6 bottom-6 fixed z-10 outline-none w-[600px] flex"
+                  className="right-0 top-0 bottom-0 fixed z-10 outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12"
                   style={
                     {
                       "--initial-transform": "calc(100% + 8px)",
                     } as React.CSSProperties
                   }
                 >
-                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
-                    <div className="w-full flex px-6 py-6 justify-between items-center">
-                      <Drawer.Title className="font-semibold text-xl text-slate-800">
-                        Điều chỉnh hóa đơn tháng
-                        <span className="text-slate-500 ml-3 font-normal text-lg">
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none ">
+                    <div className="w-full flex px-8 pt-8 pb-6 justify-between items-center min-[360px]:max-[800px]:p-4 border-b border-slate-200">
+                      <Drawer.Title className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
+                        Điều chỉnh hóa đơn
+                        <span className="text-slate-500 ml-3 font-normal text-lg min-[360px]:max-[800px]:text-sm">
                           {selectedMonth.toLocaleString("default", {
                             month: "2-digit",
                           })}
@@ -414,14 +414,14 @@ const ExpenseCalendar = ({
                         <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
-                    <div className="w-full h-full flex flex-col gap-5 px-6">
-                      <ul className="w-full flex flex-col gap-2">
+                    <div className="w-full h-full flex flex-col gap-5 px-8 pt-6 min-[360px]:max-[800px]:px-4 min-[360px]:max-[800px]:gap-4">
+                      <ul className="w-full flex flex-col gap-2 min-[360px]:max-[800px]:rounded-xl bg-white border-slate-200 border py-3 px-2 rounded-xl">
                         {billingList.map((billing) => (
                           <li
                             key={billing.id}
-                            className="flex gap-2 items-center pl-4"
+                            className="flex gap-8 items-center pl-4 min-[360px]:max-[800px]:gap-4"
                           >
-                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-32 animate-numEntry">
+                            <span className="text-base font-medium text-slate-900 flex-shrink-0 w-fit min-w-24 animate-numEntry">
                               {formatNumber(billing.amount)}
                               <span className="text-slate-400">,000</span>
                             </span>
@@ -464,7 +464,10 @@ const ExpenseCalendar = ({
               Icon={Banknote}
             />
           </div>
-          <div id="rowBottom" className="w-full flex gap-4 shrink-0">
+          <div
+            id="rowBottom"
+            className="w-full flex gap-4 shrink-0 min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-2"
+          >
             <BalanceCard
               type={CardType.Tertiary}
               cardTitle="Tổng đã chi"

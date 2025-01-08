@@ -64,7 +64,7 @@ const CategoryInputForm = () => {
   return (
     <Form {...form}>
       <form
-        className="flex gap-2 w-full items-center px-2"
+        className="flex gap-2 w-full items-center"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
@@ -75,7 +75,7 @@ const CategoryInputForm = () => {
                 <Input
                   className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
                   {...field}
-                  placeholder="Nhập tên phân loại"
+                  placeholder="Nhập tên phân loại mới"
                 />
               </FormControl>
               <FormMessage />
@@ -86,7 +86,7 @@ const CategoryInputForm = () => {
           type="submit"
           variant="default"
           size="icon"
-          className="shrink-0 bg-qik-pri-700 hover:bg-qik-pri-500"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700"
         >
           <PlusCircle className="w-6 h-6 text-white shrink-0" />
         </Button>

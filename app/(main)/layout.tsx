@@ -21,7 +21,7 @@ export default function MainLayout({
 }) {
   return (
     <div
-      className={`flex flex-col justify-center px-10 scroll-smooth ${inter.variable} ${manrope.variable} font-[inter]`}
+      className={`flex flex-col justify-center px-10 scroll-smooth ${inter.variable} ${manrope.variable} font-[inter] min-[360px]:max-[800px]:px-6`}
     >
       <Header />
       {children}

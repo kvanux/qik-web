@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -25,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Drawer } from "vaul";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Settings, Info } from "lucide-react";
 import CategoryInputForm from "@/components/ui/custom/singleInputForm/CategoryInputForm";
 
 interface DataProps {
@@ -33,7 +34,7 @@ interface DataProps {
 }
 
 interface ExpenseForm {
-  amount: number;
+  amount: number | undefined;
   date: string;
   categoryID: number | null;
 }
@@ -51,9 +52,11 @@ const QikLogger = ({ categories }: DataProps) => {
     );
   };
 
-  const { register, handleSubmit, setValue, reset } = useForm<ExpenseForm>({
+  const { register, handleSubmit, setValue } = useForm<ExpenseForm>({
     defaultValues: {
-      date: new Date().toISOString(),
+      amount: undefined,
+      date: date.toISOString(),
+      categoryID: Number(categ),
     },
   });
 
@@ -74,28 +77,27 @@ const QikLogger = ({ categories }: DataProps) => {
   }, [date, setValue]);
 
   const onSubmit: SubmitHandler<ExpenseForm> = async (data) => {
-    try {
-      const response = await fetch("http://localhost:3000/api/expense", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    const response = await fetch("http://localhost:3000/api/expense", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.status === 500) {
+      toast.error("Có lỗi xảy ra", {
+        description: `${response.statusText}`,
       });
+    } else {
+      setValue("amount", undefined);
 
       toast.success(`Nhập chi phí mới thành công`);
       await revalidateExpenses();
 
       return response.json();
-    } catch (error) {
-      toast.error("Có lỗi xảy ra", { description: `${error}` });
     }
   };
-
-  const { ref: inputRefRegister, ...inputRegisterRest } = register("amount", {
-    required: "Nhập số tiền nhé",
-    valueAsNumber: true,
-  });
 
   const deleteCategory = async function (categoryId: number) {
     try {
@@ -112,7 +114,7 @@ const QikLogger = ({ categories }: DataProps) => {
 
   return (
     <form
-      className="flex flex-col gap-2 w-full focus:border-qik-pri-600"
+      className="flex flex-col gap-2 w-full focus:border-qik-pri-600 min-[360px]:max-[800px]:gap-2"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="relative">
@@ -120,135 +122,137 @@ const QikLogger = ({ categories }: DataProps) => {
           ,000
         </div>
         <Input
-          ref={(e) => {
-            inputRefRegister(e);
-            if (e) {
-              e.focus();
-            }
-          }}
           placeholder="Nhập chi phí mới"
           className="w-full pl-4 pr-12 text-base max-[1280px]:text-sm focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
-          {...inputRegisterRest}
+          {...register("amount", {
+            valueAsNumber: true,
+          })}
           autoComplete="off"
         />
       </div>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            className={cn(
-              "w-full justify-start text-left text-base max-[1280px]:text-sm text-slate-900 items-center font-normal border-slate-200",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="h-4 w-4 text-slate-700" />
-            {isToday(date) ? "Hôm nay" : format(date, "dd/MM/yyyy")}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={(newDate) => {
-              if (newDate) {
-                setDate(newDate);
-                setValue("date", formatDateToUTC(newDate));
-              }
-            }}
-            initialFocus
-            defaultMonth={date}
-            ISOWeek
-          />
-        </PopoverContent>
-      </Popover>
-      <Select
-        value={categ}
-        onValueChange={(newCateg) => {
-          if (newCateg) {
-            setCateg(newCateg);
-            setValue("categoryID", Number(newCateg));
-          }
-        }}
-      >
-        <SelectTrigger className="text-slate-600 text-base focus:border-qik-pri-600 focus:border-2 focus:ring-0 focus:ring-offset-0">
-          <SelectValue
-            placeholder="Không ghi rõ phân loại"
-            className="text-base"
-          />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem key={null} value={"null"} className="text-slate-500">
-            Không ghi rõ phân loại
-          </SelectItem>
-          {categoryList.map((category) => (
-            <SelectItem key={category.id} value={category.id.toString()}>
-              {category.title}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Label className="text-slate-500 font-normal my-1">
-        Lựa chọn phân loại của chi phí giúp chúng tôi đưa ra phân tích chi tiêu
-        tốt hơn cho bạn.
-        <Drawer.Root direction="right">
-          <Drawer.Trigger asChild>
+      <div className="flex flex-col gap-2 min-[360px]:max-[800px]:flex-row min-[360px]:max-[800px]:gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
             <Button
-              variant={"link"}
-              className="h-5 px-1 transition-all text-qik-sec-800 hover:text-qik-pri-900 duration-300"
+              type="button"
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left text-base max-[1280px]:text-sm text-slate-900 items-center font-normal border-slate-200",
+                !date && "text-muted-foreground"
+              )}
             >
-              Điều chỉnh phân loại
+              <CalendarIcon className="h-4 w-4 text-slate-700" />
+              {isToday(date) ? "Hôm nay" : format(date, "dd/MM/yyyy")}
             </Button>
-          </Drawer.Trigger>
-          <Drawer.Portal>
-            <Drawer.Content
-              className="right-6 top-6 bottom-6 fixed z-10 outline-none w-[600px] flex"
-              style={
-                {
-                  "--initial-transform": "calc(100% + 8px)",
-                } as React.CSSProperties
-              }
-            >
-              <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col rounded-[16px]">
-                <div className="w-full flex px-6 py-6 justify-between items-center">
-                  <Drawer.Title className="font-semibold text-xl text-slate-800">
-                    Điều chỉnh phân loại
-                  </Drawer.Title>
-                  <Drawer.Close>
-                    <X className="text-slate-900 w-6 h-6"></X>
-                  </Drawer.Close>
-                </div>
-                <div className="w-full h-full flex flex-col gap-5 px-6">
-                  <ul className="w-full flex flex-col gap-2">
-                    {categoryList.map((category) => (
-                      <li
-                        key={category.id}
-                        className="flex gap-2 items-center pl-4"
-                      >
-                        <span className="text-base font-medium text-slate-600 w-full">
-                          {category.title}
-                        </span>
-                        <Button
-                          onClick={() => deleteCategory(category.id)}
-                          variant="ghost"
-                          size="icon"
-                          className=" shrink-0"
-                        >
-                          <Trash2 className="w-5 h-5 text-red-800" />
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                  <CategoryInputForm />
-                </div>
-              </div>
-            </Drawer.Content>
-          </Drawer.Portal>
-        </Drawer.Root>
-      </Label>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(newDate) => {
+                if (newDate) {
+                  setDate(newDate);
+                  setValue("date", formatDateToUTC(newDate));
+                }
+              }}
+              initialFocus
+              defaultMonth={date}
+              ISOWeek
+            />
+          </PopoverContent>
+        </Popover>
+        <Select
+          value={categ}
+          onValueChange={(newCateg) => {
+            if (newCateg) {
+              setCateg(newCateg);
+              setValue("categoryID", Number(newCateg));
+            }
+          }}
+        >
+          <SelectTrigger className="text-slate-600 text-left text-base focus:border-qik-pri-600 focus:border-2 focus:ring-0 focus:ring-offset-0 hover:bg-slate-100 transition-colors duration-300 max-[1280px]:text-sm min-[360px]:max-[800px]:w-full min-[360px]:max-[800px]:p-3">
+            <SelectValue
+              placeholder="Không ghi rõ phân loại"
+              className="text-base"
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <Drawer.Root direction="right">
+              <Drawer.Trigger asChild>
+                <Button
+                  variant={"ghost"}
+                  className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700"
+                >
+                  <Settings />
+                  Điều chỉnh phân loại
+                </Button>
+              </Drawer.Trigger>
+              <Drawer.Portal>
+                <Drawer.Content
+                  className="right-0 top-0 bottom-0 fixed outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12 z-50"
+                  style={
+                    {
+                      "--initial-transform": "calc(100% + 8px)",
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none ">
+                    <div className="w-full flex px-8 pt-8 pb-6 justify-between items-center min-[360px]:max-[800px]:p-4 border-b border-slate-200">
+                      <Drawer.Title className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
+                        Điều chỉnh phân loại
+                      </Drawer.Title>
+                      <Drawer.Close>
+                        <X className="text-slate-900 w-6 h-6"></X>
+                      </Drawer.Close>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-5 px-8 pt-6 min-[360px]:max-[800px]:px-4 min-[360px]:max-[800px]:gap-4">
+                      <ul className="w-full flex flex-col gap-2 min-[360px]:max-[800px]:py-2 min-[360px]:max-[800px]:rounded-xl bg-white border-slate-200 border py-3 px-2 rounded-xl">
+                        {categoryList.map((category) => (
+                          <li
+                            key={category.id}
+                            className="flex gap-2 items-center pl-4"
+                          >
+                            <span className="text-base font-medium text-slate-600 w-full">
+                              {category.title}
+                            </span>
+                            <Button
+                              onClick={() => deleteCategory(category.id)}
+                              variant="ghost"
+                              size="icon"
+                              className=" shrink-0"
+                            >
+                              <Trash2 className="w-5 h-5 text-red-800" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                      <CategoryInputForm />
+                    </div>
+                  </div>
+                </Drawer.Content>
+              </Drawer.Portal>
+            </Drawer.Root>
+            <Separator orientation="horizontal" className="w-full" />
+            <SelectItem key={null} value={"null"} className="text-slate-500">
+              Không ghi rõ phân loại
+            </SelectItem>
+            {categoryList.map((category) => (
+              <SelectItem key={category.id} value={category.id.toString()}>
+                {category.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex gap-1 items-center max-[1440px]:hidden">
+        <Info className="text-slate-600 w-5 h-5 pt-[2px]" />
+        <Label className="text-slate-500 font-normal max-[1280px]:text-xs">
+          Phân loại chi phí giúp quản lý chi tiêu tốt hơn.
+        </Label>
+      </div>
       <Button
         type="submit"
-        className="text-white bg-qik-sec-700 hover:bg-qik-pri-700 transition-colors duration-300 font-semibold text-base mt-2"
+        className="text-white bg-qik-sec-700 hover:bg-qik-pri-700 transition-colors duration-300 font-semibold text-base mt-3 min-[360px]:max-[800px]:text-sm min-[360px]:max-[800px]:mt-0"
       >
         Nhập
       </Button>

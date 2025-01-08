@@ -17,8 +17,10 @@ interface BillingForm {
 }
 
 const BillingInputForm = ({ currentMonth }: Props) => {
-  const { register, handleSubmit } = useForm<BillingForm>({
+  const { register, handleSubmit, reset } = useForm<BillingForm>({
     defaultValues: {
+      amount: undefined,
+      title: "",
       month: currentMonth.toISOString(),
     },
   });
@@ -33,6 +35,8 @@ const BillingInputForm = ({ currentMonth }: Props) => {
         body: JSON.stringify(data),
       });
 
+      reset();
+
       await revalidateExpenses();
       toast.success(`Billing added successfully`);
 
@@ -44,7 +48,7 @@ const BillingInputForm = ({ currentMonth }: Props) => {
 
   return (
     <form
-      className="flex gap-2 w-full items-center"
+      className="flex gap-2 w-full items-center min-[360px]:max-[800px]:flex-col"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="relative w-full">
@@ -70,14 +74,26 @@ const BillingInputForm = ({ currentMonth }: Props) => {
         {...register("title")}
         placeholder="Nhập mô tả"
       />
-      <Button
-        type="submit"
-        variant="default"
-        size="icon"
-        className="shrink-0 bg-qik-pri-700 hover:bg-qik-pri-500"
-      >
-        <PlusCircle className="w-6 h-6 text-white shrink-0" />
-      </Button>
+      {screen.width > 360 && screen.width < 800 ? (
+        <Button
+          type="submit"
+          variant="default"
+          size="default"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700 text-base w-full"
+        >
+          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          Hóa đơn mới
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          variant="default"
+          size="icon"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700"
+        >
+          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+        </Button>
+      )}
     </form>
   );
 };

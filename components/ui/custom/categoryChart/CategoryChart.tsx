@@ -71,6 +71,12 @@ const CategoryChart = ({ data }: CategoryChartProps) => {
             }}
           />
         </Pie>
+        {/* <Legend
+          layout="vertical"
+          align="right"
+          verticalAlign="middle"
+          width={200}
+        /> */}
         <Tooltip
           content={({ active, payload }: TooltipProps<ValueType, NameType>) => {
             if (active && payload && payload.length) {

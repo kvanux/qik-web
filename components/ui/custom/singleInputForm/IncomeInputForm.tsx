@@ -17,8 +17,10 @@ interface IncomeForm {
 }
 
 const IncomeInputForm = ({ currentMonth }: Props) => {
-  const { register, handleSubmit } = useForm<IncomeForm>({
+  const { register, handleSubmit, reset } = useForm<IncomeForm>({
     defaultValues: {
+      amount: undefined,
+      title: "",
       month: currentMonth.toISOString(),
     },
   });
@@ -33,6 +35,8 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
         body: JSON.stringify(data),
       });
 
+      reset();
+
       await revalidateExpenses();
       toast.success(`Income added successfully`);
 
@@ -44,7 +48,7 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
 
   return (
     <form
-      className="flex gap-2 w-full items-center"
+      className="flex gap-2 w-full items-center min-[360px]:max-[800px]:flex-col"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="relative w-full">
@@ -70,14 +74,26 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
         {...register("title")}
         placeholder="Nhập mô tả"
       />
-      <Button
-        type="submit"
-        variant="default"
-        size="icon"
-        className="shrink-0 bg-qik-pri-700 hover:bg-qik-pri-500"
-      >
-        <PlusCircle className="w-6 h-6 text-white shrink-0" />
-      </Button>
+      {screen.width > 360 && screen.width < 800 ? (
+        <Button
+          type="submit"
+          variant="default"
+          size="default"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700 text-base w-full"
+        >
+          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          Thu nhập mới
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          variant="default"
+          size="icon"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700"
+        >
+          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+        </Button>
+      )}
     </form>
   );
 };

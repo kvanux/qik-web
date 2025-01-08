@@ -28,18 +28,15 @@ export default async function Home() {
   return (
     <div
       id="container"
-      className="grid grid-cols-12 gap-6 w-full max-w-[1840px] self-center"
+      className="grid grid-cols-12 gap-6 w-full max-w-[1840px] self-center min-[360px]:max-[800px]:flex min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-4"
     >
       <div
         id="panel-layout-3"
-        className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel"
+        className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel min-[360px]:max-[800px]:w-full"
       >
         <div id="section-Logger" className="flex flex-col gap-4 w-full">
-          <div
-            id="sectionTitle-Logger"
-            className="w-full flex h-10 items-center"
-          >
-            <h2 className="text-xl font-semibold text-slate-800 w-full">
+          <div id="sectionTitle-Logger" className="w-full flex items-center">
+            <h2 className="text-xl font-semibold text-slate-800 w-full min-[360px]:max-[800px]:text-lg">
               Chi phí mới
             </h2>
             <div id="interactGroup-Logger" className="flex gap-2"></div>
@@ -51,7 +48,7 @@ export default async function Home() {
       </div>
       <div
         id="panel-layout-9"
-        className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel"
+        className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel min-[360px]:max-[800px]:w-full"
       >
         <ExpenseCalendar
           expenses={expenses}

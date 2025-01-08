@@ -89,7 +89,7 @@ const DataDashboard = ({
           ? 0
           : balanceList.find((balance) => balance.month === i)!.balance;
 
-      const total = inSum - outSum + leftover;
+      const total = inSum > 0 || outSum > 0 ? inSum - outSum + leftover : 0;
 
       return {
         month: `Tháng ${i + 1}`,
@@ -185,8 +185,9 @@ const DataDashboard = ({
 
     expenseList.forEach((expense) => {
       expense.categoryID === null
-        ? (groups[0].amount += 1)
-        : (groups.find((item) => item.id === expense.categoryID)!.amount += 1);
+        ? (groups[0].amount += expense.amount)
+        : (groups.find((item) => item.id === expense.categoryID)!.amount +=
+            expense.amount);
     });
 
     return groups;
@@ -262,12 +263,12 @@ const DataDashboard = ({
   }, [expenseList, incomeList, billingList, balanceList]);
 
   return (
-    <div className="grid grid-cols-12 gap-6 w-full h-full max-w-[1840px] self-center">
-      <div className="flex flex-col h-full gap-6 col-span-9 bg-white rounded-xl p-5 shadow-qele-panel">
+    <div className="grid grid-cols-12 gap-6 w-full h-full max-w-[1840px] self-center min-[360px]:max-[800px]:flex min-[360px]:max-[800px]:flex-col">
+      <div className="flex flex-col h-full gap-6 col-span-9 bg-white rounded-xl p-5 shadow-qele-panel min-[360px]:max-[800px]:p-4">
         <div className="h-full w-full flex flex-col gap-3">
           <div className="w-full flex h-10 justify-between items-center">
-            <h2 className="text-xl font-semibold text-slate-800 w-full">
-              Tài chính theo năm
+            <h2 className="text-xl font-semibold text-slate-800 w-full min-[360px]:max-[800px]:text-lg">
+              Tài chính năm
             </h2>
             <Select
               value={year.toString()}
@@ -275,7 +276,7 @@ const DataDashboard = ({
                 setYear(Number(newValue));
               }}
             >
-              <SelectTrigger className="w-56 text-base">
+              <SelectTrigger className="w-56 text-base focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 focus:ring-offset-0 focus:border-qik-pri-600 focus:bg-slate-50 hover:bg-slate-50 focus:border-2">
                 <SelectValue defaultValue={currentYear} />
               </SelectTrigger>
               <SelectContent>
@@ -291,10 +292,10 @@ const DataDashboard = ({
             <YearChart data={comboChartData}></YearChart>
           </div>
         </div>
-        <div className="h-full w-full flex gap-6">
-          <div className="h-full w-full flex flex-col gap-5">
-            <div className="w-full flex h-10 gap-3 items-center">
-              <h2 className="text-lg font-medium text-slate-800 w-full">
+        <div className="h-full w-full grid grid-cols-9 gap-6 min-[360px]:max-[800px]:flex min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-2">
+          <div className="h-full col-span-6 flex flex-col gap-5 min-[360px]:max-[800px]:w-full">
+            <div className="w-full flex h-10 gap-3 items-center min-[360px]:max-[800px]:gap-0">
+              <h2 className="text-lg font-medium text-slate-800 w-full min-[360px]:max-[800px]:text-base min-[360px]:max-[800px]:font-semibold">
                 Phân lượng chi tiêu
               </h2>
             </div>
@@ -302,9 +303,9 @@ const DataDashboard = ({
               <ExpenseHistogram data={histogramData} />
             </div>
           </div>
-          <div className="h-full w-full flex flex-col gap-5">
-            <div className="w-full flex h-10 gap-3 items-center">
-              <h2 className="text-lg font-medium text-slate-800 w-full">
+          <div className="h-full col-span-3 flex flex-col gap-5 min-[360px]:max-[800px]:w-full">
+            <div className="w-full flex h-10 gap-3 items-center min-[360px]:max-[800px]:gap-0">
+              <h2 className="text-lg font-medium text-slate-800 w-full min-[360px]:max-[800px]:text-base min-[360px]:max-[800px]:font-semibold">
                 Phân loại chi tiêu
               </h2>
             </div>
@@ -316,7 +317,7 @@ const DataDashboard = ({
       </div>
       <div className="col-span-3 h-[800px] flex flex-col gap-4 bg-white rounded-xl p-5 shadow-qele-panel">
         <div className="w-full flex h-10 gap-3 items-center">
-          <h2 className="text-xl font-semibold text-neutral-800 w-full">
+          <h2 className="text-xl font-semibold text-neutral-800 w-full min-[360px]:max-[800px]:text-lg">
             Phân tích tổng quan
           </h2>
           <Separator orientation="vertical" className="h-7" />

@@ -25,7 +25,7 @@ const BalanceCard = ({
 }: Props) => {
   return (
     <div
-      className={`w-full min-w-40 rounded-2xl flex flex-col overflow-clip ${
+      className={`w-full min-w-40 rounded-2xl flex flex-col overflow-clip min-[360px]:max-[800px]:min-w-28 ${
         type == CardType.Primary && "bg-qik-pri-900"
       } ${type == CardType.Tertiary && "bg-qik-ter-800"}`}
     >

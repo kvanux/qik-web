@@ -19,6 +19,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { signOut } from "next-auth/react";
 
@@ -39,16 +40,20 @@ const Header = () => {
           alt="logo"
           width={44}
           height={44}
-          className=""
+          className="min-[360px]:max-[800px]:hidden"
         />
-        <Separator orientation="vertical" className="h-11" />
+        <Separator
+          orientation="vertical"
+          className="h-11 min-[360px]:max-[800px]:hidden"
+        />
         <NavigationMenu className="pt-1">
           <NavigationMenuList>
             <NavigationMenuItem>
               <Link href="/" passHref legacyBehavior>
                 <NavigationMenuLink
                   className={`${
-                    pathName === "/" && "text-slate-900 bg-slate-200"
+                    pathName === "/" &&
+                    "text-slate-900 bg-slate-200 min-[360px]:max-[800px]:h-10 min-[360px]:max-[800px]:border-qik-pri-600"
                   } gap-1 inline-flex h-auto w-max items-center justify-center rounded-md px-2 py-1 text-base text-slate-500 font-medium transition-colors hover:bg-slate-100 hover:text-slate-600 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-slate-100/50 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 dark:focus:bg-slate-800 dark:focus:text-slate-50`}
                 >
                   {pathName === "/" ? (
@@ -57,7 +62,7 @@ const Header = () => {
                       alt="illus"
                       width={36}
                       height={36}
-                      className=""
+                      className="min-[360px]:max-[800px]:hidden"
                     />
                   ) : (
                     <Image
@@ -65,7 +70,7 @@ const Header = () => {
                       alt="illus"
                       width={36}
                       height={36}
-                      className=""
+                      className="min-[360px]:max-[800px]:hidden"
                     />
                   )}
                   Dòng tiền
@@ -85,7 +90,7 @@ const Header = () => {
                       alt="illus"
                       width={36}
                       height={36}
-                      className=""
+                      className="min-[360px]:max-[800px]:hidden"
                     />
                   ) : (
                     <Image
@@ -93,7 +98,7 @@ const Header = () => {
                       alt="illus"
                       width={36}
                       height={36}
-                      className=""
+                      className="min-[360px]:max-[800px]:hidden"
                     />
                   )}
                   Tổng quan
@@ -116,21 +121,17 @@ const Header = () => {
                 avatar={userAvatar as string}
               />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
+            <DropdownMenuContent className="w-40">
               <DropdownMenuItem
                 asChild
                 className="hover:cursor-pointer hover:bg-slate-100"
               >
-                {/* <Link
-                  href="/api/auth/signout"
-                >
-                  Sign Out
-                </Link> */}
                 <Button
                   variant="ghost"
-                  className="w-full text-slate-900 font-medium"
+                  className="w-full text-slate-900 font-medium justify-start px-3 focus-visible:ring-0 focus-visible:ring-offset-0"
                   onClick={() => signOut()}
                 >
+                  <LogOut />
                   Đăng xuất
                 </Button>
               </DropdownMenuItem>

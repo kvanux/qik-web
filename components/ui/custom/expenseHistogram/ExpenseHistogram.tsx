@@ -40,15 +40,18 @@ const Histogram: React.FC<HistogramProps> = ({ data }) => {
         barCategoryGap={0}
       >
         <CartesianGrid vertical={false} stroke="#E2E8F0" />
-        <YAxis
-          orientation="left"
-          stroke="#888888"
-          fontSize={14}
-          tickLine={false}
-          axisLine={false}
-          allowDecimals={false}
-          width={48}
-        />
+        {screen.width > 800 && (
+          <YAxis
+            orientation="left"
+            stroke="#888888"
+            fontSize={14}
+            tickLine={false}
+            axisLine={false}
+            allowDecimals={false}
+            width={48}
+          />
+        )}
+
         <Tooltip
           cursor={{ fill: "#EBFAFF" }}
           content={({ active, payload }: TooltipProps<ValueType, NameType>) => {
@@ -77,7 +80,7 @@ const Histogram: React.FC<HistogramProps> = ({ data }) => {
             return null;
           }}
         />
-        <Bar dataKey="y" fill="#016FB9" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="y" fill="#016FB9" radius={[4, 4, 0, 0]} opacity={0.8} />
         {/* <Brush stroke="#CBD5E1" radius={4} /> */}
       </BarChart>
     </ResponsiveContainer>
