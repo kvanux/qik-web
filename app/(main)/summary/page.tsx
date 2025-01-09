@@ -2,7 +2,7 @@ import React from "react";
 import DataDashboard from "@/components/ui/custom/dataDashboard/DataDashboard";
 import prisma from "@/prisma/client";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions/auth";
 
 export default async function SummaryPage() {
   const session = await getServerSession(authOptions);

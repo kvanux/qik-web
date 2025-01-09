@@ -2,7 +2,7 @@ import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
 import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
 import prisma from "@/prisma/client";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions/auth";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
