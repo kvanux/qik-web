@@ -77,7 +77,7 @@ const QikLogger = ({ categories }: DataProps) => {
   }, [date, setValue]);
 
   const onSubmit: SubmitHandler<ExpenseForm> = async (data) => {
-    const response = await fetch("http://localhost:3000/api/expense", {
+    const response = await fetch("/api/expense", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
