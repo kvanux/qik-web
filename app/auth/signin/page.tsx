@@ -15,14 +15,66 @@ export default function SignIn() {
       <div className="w-[668px] h-full px-20 pt-24 pb-[72px] flex flex-col bg-white/50 border-[2.5px] border-slate-100/50 shadow-qele-drawer backdrop-blur-xl rounded-3xl min-[360px]:max-[800px]:w-full min-[360px]:max-[800px]:px-6 min-[360px]:max-[800px]:pt-8 min-[360px]:max-[800px]:pb-6 max-[1366px]:w-[600px]">
         <div className="w-full h-full flex flex-col gap-8 ">
           <div className="flex gap-6 items-center h-12 max-[1366px]:justify-between max-[1366px]:gap-0">
-            <Image
-              src="/image/logo-lg.webp"
-              width={48}
-              height={48}
-              alt="logoQIK"
-              className="flex-shrink-0"
-              priority
-            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+              fill="none"
+            >
+              <path
+                d="M39.6632 27.7895C39.6166 27.7895 39.5789 27.7518 39.5789 27.7053V24C39.5789 15.396 32.604 8.42105 24 8.42105C15.396 8.42105 8.42105 15.396 8.42105 24C8.42105 32.604 15.396 39.5789 24 39.5789H27.7053C27.7518 39.5789 27.7895 39.6166 27.7895 39.6632V47.9158C27.7895 47.9623 27.7518 48 27.7053 48H24C10.7452 48 0 37.2548 0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24V27.7053C48 27.7518 47.9623 27.7895 47.9158 27.7895H39.6632Z"
+                fill="url(#paint0_linear_2439_8560)"
+              />
+              <path
+                d="M29.4737 29.4737H48V48H29.4737V29.4737Z"
+                fill="url(#paint1_linear_2439_8560)"
+              />
+              <defs>
+                <linearGradient
+                  id="paint0_linear_2439_8560"
+                  x1="48"
+                  y1="48"
+                  x2="7"
+                  y2="2"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#0EDFA2" stop-opacity="0.64" />
+                  <stop
+                    offset="0.255"
+                    stop-color="#30DDC5"
+                    stop-opacity="0.727816"
+                  />
+                  <stop offset="0.4" stop-color="#69D9FF" />
+                  <stop offset="0.45" stop-color="#69D9FF" />
+                  <stop offset="0.5" stop-color="#69D9FF" />
+                  <stop offset="0.548028" stop-color="#69D9FF" />
+                  <stop offset="0.6" stop-color="#69D9FF" />
+                  <stop offset="1" stop-color="#27C1F5" stop-opacity="0.72" />
+                </linearGradient>
+                <linearGradient
+                  id="paint1_linear_2439_8560"
+                  x1="48"
+                  y1="48"
+                  x2="7"
+                  y2="2"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#0EDFA2" stop-opacity="0.64" />
+                  <stop
+                    offset="0.255"
+                    stop-color="#30DDC5"
+                    stop-opacity="0.727816"
+                  />
+                  <stop offset="0.4" stop-color="#69D9FF" />
+                  <stop offset="0.45" stop-color="#69D9FF" />
+                  <stop offset="0.5" stop-color="#69D9FF" />
+                  <stop offset="0.548028" stop-color="#69D9FF" />
+                  <stop offset="0.6" stop-color="#69D9FF" />
+                  <stop offset="1" stop-color="#27C1F5" stop-opacity="0.72" />
+                </linearGradient>
+              </defs>
+            </svg>
             <Separator
               orientation="horizontal"
               className="w-56 bg-slate-200 min-[360px]:max-[800px]:w-10 max-[1366px]:w-40"
