@@ -60,7 +60,7 @@ export default function PrivacyPolicy() {
           <h2 className="text-2xl font-semibold mb-3">Contact Us</h2>
           <p className="text-gray-700">
             If you have questions about this Privacy Policy, please contact us
-            at: <span className="text-blue-600">your@email.com</span>
+            at: <span className="text-blue-600">nkhanhvan293@gmail.com</span>
           </p>
         </div>
       </section>

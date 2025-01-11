@@ -16,7 +16,8 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "QIK Finance",
-  description: "Your Favorite Personal Finance Manager",
+  description:
+    "Bắt đầu hành trình làm chủ tài chính của bạn ngay hôm nay với công cụ quản lý tài chính cá nhân đắt lực",
 };
 
 export default function RootLayout({
