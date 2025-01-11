@@ -2,6 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -103,10 +104,16 @@ export default function SignIn() {
             </div>
           </Button>
         </div>
-        <div className="w-full flex justify-between items-center">
+        <div className="w-full flex justify-between items-center gap-2">
           <p className="text-sm font-medium text-slate-500">
             © 2024 QIK Finance
           </p>
+          <Link
+            href="/privacy"
+            className="text-qik-pri-800 font-medium text-sm"
+          >
+            Privacy
+          </Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
