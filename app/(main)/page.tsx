@@ -1,15 +1,17 @@
 import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
 import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
 import prisma from "@/prisma/client";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/authOptions/auth";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { UserType } from "@/types/supabase";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  if (!session) console.log("Session not found");
-  const currentUser = await prisma.user.findUnique({
-    where: { email: session!.user!.email as string },
-  });
+  const supabase = createServerComponentClient({ cookies });
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const currentUser = session?.user as UserType;
   const currentUserID = currentUser?.id;
 
   const expenses = await prisma.expense.findMany({

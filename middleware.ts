@@ -1,13 +1,24 @@
-import { withAuth } from "next-auth/middleware";
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export default withAuth({
-  pages: {
-    signIn: "/auth/signin",
-  },
-});
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req, res })
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    return NextResponse.redirect(new URL('/auth/signin', req.url))
+  }
+
+  return res
+}
 
 export const config = {
   matcher: [
     "/((?!privacy|api|auth|public|_next/static|_next/image|favicon.ico).*)",
   ],
-};
+}

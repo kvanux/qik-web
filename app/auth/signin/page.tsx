@@ -1,14 +1,28 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/router";
+import { supabase } from "@/lib/supabase";
 
 export default function SignIn() {
-  const handleSignIn = (provider: string) => {
-    signIn(provider, { callbackUrl: "/" });
+  const router = useRouter();
+
+  const handleSignIn = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -86,7 +100,7 @@ export default function SignIn() {
           </div>
           <Button
             className="p-4 w-full h-16 bg-[#f1f5f9]/70 border border-white/70 hover:bg-[#e5e8ec] rounded-xl min-[360px]:max-[800px]:h-12"
-            onClick={() => handleSignIn("google")}
+            onClick={handleSignIn}
           >
             <div className="w-full flex gap-0 items-center ">
               <Image
@@ -105,15 +119,17 @@ export default function SignIn() {
           </Button>
         </div>
         <div className="w-full flex justify-between items-center gap-2">
-          <p className="text-sm font-medium text-slate-500">
-            © 2024 QIK Finance
-          </p>
-          <Link
-            href="/privacy"
-            className="text-qik-pri-800 font-medium text-sm"
-          >
-            Privacy
-          </Link>
+          <div className="flex gap-2">
+            <p className="text-sm font-medium text-slate-500">
+              © 2024 QIK Finance
+            </p>
+            <Link
+              href="/privacy"
+              className="text-qik-pri-900 font-medium text-sm"
+            >
+              Privacy Policy
+            </Link>
+          </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"

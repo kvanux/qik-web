@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import UserCard from "@/components/ui/custom/userCard/UserCard";
-import { useSession } from "next-auth/react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useState, useEffect } from "react";
+import { UserType } from "@/types/supabase";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +26,23 @@ import { Separator } from "@/components/ui/separator";
 import { signOut } from "next-auth/react";
 
 const Header = () => {
-  const { status, data: session } = useSession();
+  const [user, setUser] = useState<UserType | null>(null);
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    async function getUser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user as UserType);
+    }
+    getUser();
+  }, []);
+
   const [userName, userEmail, userAvatar] = [
-    session?.user.name,
-    session?.user.email,
-    session?.user.image,
+    user?.user_metadata.name,
+    user?.email,
+    user?.user_metadata.avatar_url,
   ];
   const pathName = usePathname();
 
@@ -109,10 +123,7 @@ const Header = () => {
         </NavigationMenu>
       </div>
       <div id="rightBtnsGroup" className="flex gap-3 items-center">
-        {status === "loading" && (
-          <span className="h-full flex items-center">Loading...</span>
-        )}
-        {status === "authenticated" && (
+        {user && (
           <DropdownMenu>
             <DropdownMenuTrigger className="group flex gap-3 p-2 rounded-xl hover:bg-slate-100 focus-visible:outline-none">
               <UserCard
@@ -138,7 +149,7 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        {status === "unauthenticated" && (
+        {!user && (
           <Button asChild variant="outline">
             <User className="text-slate-700" />
             <Link href="/api/auth/signin" className="text-slate-900">

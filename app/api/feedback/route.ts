@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/authOptions/auth"
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { UserType } from '@/types/supabase';
 
 export async function GET(request: NextRequest) {
     try {
@@ -18,17 +19,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const session = await getServerSession(authOptions)
-        if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+        const supabase = createRouteHandlerClient({ cookies })
+  
+        const { data: { session } } = await supabase.auth.getSession()
+        const currentUser = session?.user as UserType
+        
+        if (!currentUser) {
+            return new Response('Unauthorized', { status: 401 })
         }
-    
-        const currentUser = await prisma.user.findUnique({
-            where: {email: session!.user!.email as string}
-        })
         const currentUserID = currentUser?.id
         if (!currentUserID) {
             return NextResponse.json(
