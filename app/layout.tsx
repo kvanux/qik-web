@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "./providers";
-import { Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  fallback: ["Roboto", "Segoe UI"],
-});
+import { inter } from "./fonts";
 
 export const metadata: Metadata = {
   title: "QIK Finance",
@@ -21,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-[inter]`}>
+    <html lang="en" className={inter.variable}>
+      <body className="font-[inter]">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

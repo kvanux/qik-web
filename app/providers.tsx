@@ -2,11 +2,11 @@
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, ReactNode } from "react";
+import { createContext, useContext, useEffect } from "react";
 
-const AuthContext = createContext({});
+export const AuthContext = createContext({});
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -21,4 +21,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [supabase, router]);
 
   return children;
-};
+}
