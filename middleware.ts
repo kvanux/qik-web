@@ -3,18 +3,20 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
   const {
     data: { session },
-  } = await supabase.auth.getSession()
+  } = await supabase.auth.getSession();
 
   if (!session) {
-    return NextResponse.redirect(new URL('/auth/signin', req.url))
+    console.log('No session detected, redirecting to /auth/signin');
+    return NextResponse.redirect(new URL('/auth/signin', req.url));
   }
 
-  return res
+  console.log('Session detected:', session);
+  return res;
 }
 
 export const config = {
