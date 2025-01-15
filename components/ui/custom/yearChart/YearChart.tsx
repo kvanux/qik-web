@@ -34,7 +34,7 @@ export function YearChart({ data }: YearChartProps) {
       <ComposedChart
         data={data}
         margin={{
-          bottom: 0,
+          bottom: 20,
         }}
         barGap={0}
       >
