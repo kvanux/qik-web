@@ -24,7 +24,7 @@ export default function MainLayout({
       className={`flex flex-col justify-center px-10 scroll-smooth ${inter.variable} ${manrope.variable} font-[inter] min-[360px]:max-[800px]:px-6`}
     >
       <Header />
-      {children}
+      <>{children}</>
       <Toaster richColors closeButton theme="light" position="bottom-left" />
       <Footer />
     </div>

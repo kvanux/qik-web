@@ -27,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${manrope.variable} font-[inter]`}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <>{children}</>
+        </AuthProvider>
       </body>
     </html>
   );
