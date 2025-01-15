@@ -1,28 +1,14 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 
 export default function SignIn() {
-  const router = useRouter();
-
-  const handleSignIn = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  const handleSignIn = (provider: string) => {
+    signIn(provider, { callbackUrl: "/" });
   };
 
   return (
@@ -100,7 +86,7 @@ export default function SignIn() {
           </div>
           <Button
             className="p-4 w-full h-16 bg-[#f1f5f9]/70 border border-white/70 hover:bg-[#e5e8ec] rounded-xl min-[360px]:max-[800px]:h-12"
-            onClick={handleSignIn}
+            onClick={() => handleSignIn("google")}
           >
             <div className="w-full flex gap-0 items-center ">
               <Image
@@ -130,6 +116,12 @@ export default function SignIn() {
               Privacy Policy
             </Link>
           </div>
+          <Link
+            href="/privacy"
+            className="text-qik-pri-800 font-medium text-sm"
+          >
+            Privacy
+          </Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -169,39 +161,39 @@ export default function SignIn() {
       <div className="w-full h-[800px] absolute top-[10%] left-0 right-0 -z-20 min-[360px]:max-[800px]:w-screen min-[360px]:max-[800px]:h-screen min-[360px]:max-[800px]:overflow-clip">
         <div
           id="m1"
-          className="absolute top-[524px] left-[0px] w-[402.28px] h-[179.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform  animate-m12"
+          className="absolute top-[524px] left-[0px] w-[402.28px] h-[179.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform animate-m12"
         />
         <div
           id="m2"
-          className="absolute top-[343px] left-[242px] w-[491.42px] h-[307.49px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform  animate-m12"
+          className="absolute top-[343px] left-[242px] w-[491.42px] h-[307.49px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform animate-m12"
         />
         <div
           id="m3"
-          className="absolute top-[84px] left-[636px] w-[632.94px] h-[511.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform  animate-m3"
+          className="absolute top-[84px] left-[636px] w-[632.94px] h-[511.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform animate-m3"
         />
         <div
           id="m4"
-          className="absolute top-[78px] left-[1157px] w-[518.17px] h-[191.63px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform  animate-m4"
+          className="absolute top-[78px] left-[1157px] w-[518.17px] h-[191.63px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform animate-m4"
         />
         <div
           id="m5"
-          className="absolute top-[163px] left-[1482px] w-[437.93px] h-[454.55px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform  animate-m5 "
+          className="absolute top-[163px] left-[1482px] w-[437.93px] h-[454.55px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform animate-m5 "
         />
         <div
           id="s1 "
-          className="absolute top-[389px] left-[110px] w-[262.98px] h-[174.91px] bg-[#016fb9] rounded-full blur-[320px] transform-gpu will-change-transform  animate-s1 "
+          className="absolute top-[389px] left-[110px] w-[262.98px] h-[174.91px] bg-[#016fb9] rounded-full blur-[320px] transform-gpu will-change-transform animate-s1 "
         ></div>
         <div
           id="s2 "
-          className="absolute top-[528px] left-[624px] w-[262.98px] h-[122.55px] bg-[#016fb9] rounded-full blur-[320px] transform-gpu will-change-transform  animate-s2 "
+          className="absolute top-[528px] left-[624px] w-[262.98px] h-[122.55px] bg-[#016fb9] rounded-full blur-[320px] transform-gpu will-change-transform animate-s2 "
         ></div>
         <div
           id="s3 "
-          className="absolute top-[0px] left-[973px] w-[275.24px] h-[189.40px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform  animate-s3"
+          className="absolute top-[0px] left-[973px] w-[275.24px] h-[189.40px] bg-[#18f2b2] rounded-full blur-[320px] transform-gpu will-change-transform animate-s3"
         ></div>
         <div
           id="s4 "
-          className="absolute top-[173px] left-[1222px] w-[402.28px] h-[179.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform  animate-s4"
+          className="absolute top-[173px] left-[1222px] w-[402.28px] h-[179.37px] bg-[#69d9ff] rounded-full blur-[320px] transform-gpu will-change-transform animate-s4"
         ></div>
       </div>
       <svg

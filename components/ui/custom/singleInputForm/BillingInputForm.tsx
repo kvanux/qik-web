@@ -27,7 +27,7 @@ const BillingInputForm = ({ currentMonth }: Props) => {
 
   const onSubmit: SubmitHandler<BillingForm> = async (data) => {
     try {
-      const response = await fetch("/api/billing", {
+      const response = await fetch("http://localhost:3000/api/billing", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

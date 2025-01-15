@@ -161,7 +161,7 @@ const config: Config = {
 			},
 			s1: {
 				'0%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(0, 0)'
 				},
 				'25%': {
@@ -173,21 +173,21 @@ const config: Config = {
 					transform: 'translate(0, 40%)'
 				},
 				'75%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(0, 20%)'
 				},
 				'100%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(0, 0)'
 				},
 			},
 			s2: {
 				'0%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(0, 0)'
 				},
 				'25%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(-10%, -20%)'
 				},
 				'50%': {
@@ -199,7 +199,7 @@ const config: Config = {
 					transform: 'translate(-10%, -20%)'
 				},
 				'100%': {
-					'background-color': "#69d9ff",
+					'background-color': "#016fb9",
 					transform: 'translate(0, 0)'
 				},
 			},

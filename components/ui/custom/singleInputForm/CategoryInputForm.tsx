@@ -43,7 +43,7 @@ const CategoryInputForm = () => {
     data: z.infer<typeof CategorySchema>
   ) => {
     try {
-      const response = await fetch("/api/category", {
+      const response = await fetch("http://localhost:3000/api/category", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
