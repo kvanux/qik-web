@@ -178,31 +178,27 @@ const QikLogger = ({ categories }: DataProps) => {
           </SelectTrigger>
           <SelectContent>
             <Drawer.Root direction="right">
-              <Drawer.Trigger asChild>
-                <Button
-                  variant={"ghost"}
-                  className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700"
-                >
-                  <Settings />
-                  Điều chỉnh phân loại
-                </Button>
+              <Drawer.Trigger>
+                <div className="w-full px-2 py-1.5">
+                  <Button
+                    variant="ghost"
+                    className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700"
+                  >
+                    <Settings className="mr-2" />
+                    Điều chỉnh phân loại
+                  </Button>
+                </div>
               </Drawer.Trigger>
               <Drawer.Portal>
-                <Drawer.Content
-                  className="right-0 top-0 bottom-0 fixed outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12 z-50"
-                  style={
-                    {
-                      "--initial-transform": "calc(100% + 8px)",
-                    } as React.CSSProperties
-                  }
-                >
-                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none ">
+                <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                <Drawer.Content className="fixed right-0 top-0 bottom-0 outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12 z-50">
+                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none">
                     <div className="w-full flex px-8 pt-8 pb-6 justify-between items-center min-[360px]:max-[800px]:p-4 border-b border-slate-200">
-                      <Drawer.Title className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
+                      <div className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
                         Điều chỉnh phân loại
-                      </Drawer.Title>
-                      <Drawer.Close>
-                        <X className="text-slate-900 w-6 h-6"></X>
+                      </div>
+                      <Drawer.Close className="p-2 hover:bg-slate-100 rounded-md">
+                        <X className="text-slate-900 w-6 h-6" />
                       </Drawer.Close>
                     </div>
                     <div className="w-full h-full flex flex-col gap-5 px-8 pt-6 min-[360px]:max-[800px]:px-4 min-[360px]:max-[800px]:gap-4">
@@ -219,7 +215,7 @@ const QikLogger = ({ categories }: DataProps) => {
                               onClick={() => deleteCategory(category.id)}
                               variant="ghost"
                               size="icon"
-                              className=" shrink-0"
+                              className="shrink-0"
                             >
                               <Trash2 className="w-5 h-5 text-red-800" />
                             </Button>

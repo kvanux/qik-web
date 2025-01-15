@@ -4,61 +4,73 @@ import prisma from "@/prisma/client";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { UserType } from "@/types/supabase";
+import ErrorBoundary from "@/components/fnc/ErrorBoundary";
 
 export default async function Home() {
-  const supabase = createServerComponentClient({ cookies });
+  try {
+    const supabase = createServerComponentClient({ cookies });
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  const currentUser = session?.user as UserType;
-  const currentUserID = currentUser?.id;
+    if (!session?.user) {
+      return <div>Please log in to view this page</div>;
+    }
 
-  const expenses = await prisma.expense.findMany({
-    where: { userID: currentUserID },
-  });
-  const income = await prisma.income.findMany({
-    where: { userID: currentUserID },
-  });
-  const billing = await prisma.billing.findMany({
-    where: { userID: currentUserID },
-  });
-  const category = await prisma.category.findMany({
-    where: { userID: currentUserID },
-  });
+    const currentUser = session?.user as UserType;
+    const currentUserID = currentUser?.id;
 
-  return (
-    <div
-      id="container"
-      className="grid grid-cols-12 gap-6 w-full max-w-[1840px] self-center min-[360px]:max-[800px]:flex min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-4"
-    >
-      <div
-        id="panel-layout-3"
-        className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel min-[360px]:max-[800px]:w-full"
-      >
-        <div id="section-Logger" className="flex flex-col gap-4 w-full">
-          <div id="sectionTitle-Logger" className="w-full flex items-center">
-            <h2 className="text-xl font-semibold text-slate-800 w-full min-[360px]:max-[800px]:text-lg">
-              Chi phí mới
-            </h2>
-            <div id="interactGroup-Logger" className="flex gap-2"></div>
+    try {
+      const [expenses, income, billing, category] = await Promise.all([
+        prisma.expense.findMany({
+          where: { userID: currentUserID },
+        }),
+        prisma.income.findMany({
+          where: { userID: currentUserID },
+        }),
+        prisma.billing.findMany({
+          where: { userID: currentUserID },
+        }),
+        prisma.category.findMany({
+          where: { userID: currentUserID },
+        }),
+      ]);
+
+      return (
+        <div className="grid grid-cols-12 gap-6 w-full max-w-[1840px] self-center min-[360px]:max-[800px]:flex min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-4">
+          <div className="col-span-3 bg-white rounded-xl px-5 pt-4 pb-6 h-fit shadow-qele-panel min-[360px]:max-[800px]:w-full">
+            <div className="flex flex-col gap-4 w-full">
+              <div className="w-full flex items-center">
+                <h2 className="text-xl font-semibold text-slate-800 w-full min-[360px]:max-[800px]:text-lg">
+                  Chi phí mới
+                </h2>
+                <div className="flex gap-2"></div>
+              </div>
+              <div className="w-full">
+                <ErrorBoundary>
+                  <QikLogger categories={category} />
+                </ErrorBoundary>
+              </div>
+            </div>
           </div>
-          <div id="sectionContent-Logger" className="flex w-full">
-            <QikLogger categories={category} />
+          <div className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel min-[360px]:max-[800px]:w-full">
+            <ErrorBoundary>
+              <ExpenseCalendar
+                expenses={expenses}
+                income={income}
+                billing={billing}
+                currentUserId={currentUserID as string}
+              />
+            </ErrorBoundary>
           </div>
         </div>
-      </div>
-      <div
-        id="panel-layout-9"
-        className="col-span-9 bg-white rounded-xl px-5 py-4 shadow-qele-panel min-[360px]:max-[800px]:w-full"
-      >
-        <ExpenseCalendar
-          expenses={expenses}
-          income={income}
-          billing={billing}
-          currentUserId={currentUserID as string}
-        ></ExpenseCalendar>
-      </div>
-    </div>
-  );
+      );
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      return <div>Error loading data</div>;
+    }
+  } catch (error) {
+    console.error("Page error:", error);
+    return <div>An error occurred loading the page</div>;
+  }
 }
