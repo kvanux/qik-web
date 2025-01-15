@@ -116,12 +116,6 @@ export default function SignIn() {
               Privacy Policy
             </Link>
           </div>
-          <Link
-            href="/privacy"
-            className="text-qik-pri-800 font-medium text-sm"
-          >
-            Privacy
-          </Link>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
