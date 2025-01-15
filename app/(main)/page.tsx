@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import QikLogger from "@/components/ui/custom/qikLogger/QikLogger";
 import ExpenseCalendar from "@/components/ui/custom/expenseCalendar/expenseCalendar";
 import prisma from "@/prisma/client";
