@@ -27,7 +27,7 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
 
   const onSubmit: SubmitHandler<IncomeForm> = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/api/income", {
+      const response = await fetch("/api/income", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
