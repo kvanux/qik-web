@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Drawer } from "vaul";
-import { X, Trash2, Settings, Info } from "lucide-react";
+import { X, Trash2, Settings, Info, Loader2, PlusCircle } from "lucide-react";
 import CategoryInputForm from "@/components/ui/custom/singleInputForm/CategoryInputForm";
 
 interface DataProps {
@@ -42,6 +42,7 @@ interface ExpenseForm {
 const QikLogger = ({ categories }: DataProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const [categ, setCateg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -77,25 +78,28 @@ const QikLogger = ({ categories }: DataProps) => {
   }, [date, setValue]);
 
   const onSubmit: SubmitHandler<ExpenseForm> = async (data) => {
-    const response = await fetch("/api/expense", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (response.status === 500) {
-      toast.error("Có lỗi xảy ra", {
-        description: `${response.statusText}`,
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/expense", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    } else {
-      setValue("amount", undefined);
 
-      toast.success(`Nhập chi phí mới thành công`);
-      await revalidateExpenses();
-
-      return response.json();
+      if (response.status === 500) {
+        toast.error("Có lỗi xảy ra", {
+          description: `${response.statusText}`,
+        });
+      } else {
+        setValue("amount", undefined);
+        toast.success(`Nhập chi phí mới thành công`);
+        await revalidateExpenses();
+        return response.json();
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -128,6 +132,7 @@ const QikLogger = ({ categories }: DataProps) => {
             valueAsNumber: true,
           })}
           autoComplete="off"
+          disabled={isSubmitting}
         />
       </div>
       <div className="flex flex-col gap-2 min-[360px]:max-[800px]:flex-row min-[360px]:max-[800px]:gap-2">
@@ -253,8 +258,19 @@ const QikLogger = ({ categories }: DataProps) => {
       <Button
         type="submit"
         className="text-white bg-qik-sec-700 hover:bg-qik-pri-700 transition-colors duration-300 font-semibold text-base mt-3 min-[360px]:max-[800px]:text-sm min-[360px]:max-[800px]:mt-0"
+        disabled={isSubmitting}
       >
-        Nhập
+        {isSubmitting ? (
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin text-white" />
+            Chờ chút nha...
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <PlusCircle className="h-4 w-4 text-white" />
+            Nhập chi phí
+          </div>
+        )}
       </Button>
     </form>
   );

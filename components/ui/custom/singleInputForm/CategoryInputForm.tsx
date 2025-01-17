@@ -1,10 +1,11 @@
-import React from "react";
+"use client";
 
+import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { revalidateExpenses } from "@/app/actions";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Form,
@@ -32,6 +33,8 @@ const CategorySchema = z.object({
 });
 
 const CategoryInputForm = () => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const form = useForm<z.infer<typeof CategorySchema>>({
     resolver: zodResolver(CategorySchema),
     defaultValues: {
@@ -42,6 +45,7 @@ const CategoryInputForm = () => {
   const onSubmit: SubmitHandler<CategoryForm> = async (
     data: z.infer<typeof CategorySchema>
   ) => {
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/category", {
         method: "POST",
@@ -53,11 +57,13 @@ const CategoryInputForm = () => {
 
       toast.success(`Tạo phân loại thành công`);
       form.reset();
-      revalidateExpenses();
+      await revalidateExpenses();
 
       return response.json();
     } catch (error) {
       toast.error("Có lỗi xảy ra", { description: `${error}` });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -76,6 +82,7 @@ const CategoryInputForm = () => {
                   className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
                   {...field}
                   placeholder="Nhập tên phân loại mới"
+                  disabled={isSubmitting}
                 />
               </FormControl>
               <FormMessage />
@@ -86,9 +93,14 @@ const CategoryInputForm = () => {
           type="submit"
           variant="default"
           size="icon"
-          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700"
+          className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700 disabled:opacity-50"
+          disabled={isSubmitting}
         >
-          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          {isSubmitting ? (
+            <Loader2 className="w-6 h-6 text-white shrink-0 animate-spin" />
+          ) : (
+            <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          )}
         </Button>
       </form>
     </Form>
