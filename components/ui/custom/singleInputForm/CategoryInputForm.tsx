@@ -21,6 +21,11 @@ interface CategoryForm {
   title: string;
 }
 
+interface CategoryInputFormProps {
+  onAddStart: () => void;
+  onAddComplete: () => void;
+}
+
 const CategorySchema = z.object({
   title: z
     .string()
@@ -32,7 +37,7 @@ const CategorySchema = z.object({
     }),
 });
 
-const CategoryInputForm = () => {
+const CategoryInputForm = ({ onAddStart, onAddComplete }: CategoryInputFormProps) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<z.infer<typeof CategorySchema>>({
@@ -46,6 +51,7 @@ const CategoryInputForm = () => {
     data: z.infer<typeof CategorySchema>
   ) => {
     setIsSubmitting(true);
+    onAddStart();
     try {
       const response = await fetch("/api/category", {
         method: "POST",
@@ -64,6 +70,7 @@ const CategoryInputForm = () => {
       toast.error("Có lỗi xảy ra", { description: `${error}` });
     } finally {
       setIsSubmitting(false);
+      onAddComplete();
     }
   };
 

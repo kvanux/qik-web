@@ -28,6 +28,7 @@ import {
 import { Drawer } from "vaul";
 import { X, Trash2, Settings, Info, Loader2, PlusCircle } from "lucide-react";
 import CategoryInputForm from "@/components/ui/custom/singleInputForm/CategoryInputForm";
+import CategoryList from "@/components/ui/custom/categoryList/CategoryList";
 
 interface DataProps {
   categories: Category[];
@@ -39,10 +40,17 @@ interface ExpenseForm {
   categoryID: number | null;
 }
 
-const QikLogger = ({ categories }: DataProps) => {
+interface LogStateProps {
+  onLogStart: () => void;
+  onLogComplete: () => void;
+}
+
+
+const QikLogger = ({ categories }: DataProps, {onLogStart, onLogComplete}: LogStateProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const [categ, setCateg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -79,6 +87,7 @@ const QikLogger = ({ categories }: DataProps) => {
 
   const onSubmit: SubmitHandler<ExpenseForm> = async (data) => {
     setIsSubmitting(true);
+    onLogStart();
     try {
       const response = await fetch("/api/expense", {
         method: "POST",
@@ -100,6 +109,7 @@ const QikLogger = ({ categories }: DataProps) => {
       }
     } finally {
       setIsSubmitting(false);
+      onLogComplete();
     }
   };
 
@@ -231,7 +241,11 @@ const QikLogger = ({ categories }: DataProps) => {
                           </li>
                         ))}
                       </ul>
-                      <CategoryInputForm />
+                      <CategoryList categories={categoryList} isAddingCategory={isAddingCategory}/>
+                      <CategoryInputForm 
+                        onAddStart={() => setIsAddingCategory(true)}
+                        onAddComplete={() => setIsAddingCategory(false)}
+                      />
                     </div>
                   </div>
                 </Drawer.Content>
