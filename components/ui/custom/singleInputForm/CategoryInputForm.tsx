@@ -21,11 +21,6 @@ interface CategoryForm {
   title: string;
 }
 
-interface CategoryInputFormProps {
-  onAddStart: () => void;
-  onAddComplete: () => void;
-}
-
 const CategorySchema = z.object({
   title: z
     .string()
@@ -36,6 +31,11 @@ const CategorySchema = z.object({
       message: "Chỉ nhập được tối đa 50 ký tự.",
     }),
 });
+
+interface CategoryInputFormProps {
+  onAddStart: () => void;
+  onAddComplete: () => void;
+}
 
 const CategoryInputForm = ({ onAddStart, onAddComplete }: CategoryInputFormProps) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -50,8 +50,8 @@ const CategoryInputForm = ({ onAddStart, onAddComplete }: CategoryInputFormProps
   const onSubmit: SubmitHandler<CategoryForm> = async (
     data: z.infer<typeof CategorySchema>
   ) => {
-    setIsSubmitting(true);
     onAddStart();
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/category", {
         method: "POST",

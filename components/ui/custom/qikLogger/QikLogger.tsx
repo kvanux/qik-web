@@ -27,8 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Drawer } from "vaul";
 import { X, Trash2, Settings, Info, Loader2, PlusCircle } from "lucide-react";
-import CategoryInputForm from "@/components/ui/custom/singleInputForm/CategoryInputForm";
-import CategoryList from "@/components/ui/custom/categoryList/CategoryList";
+import CategorySection from "@/components/ui/custom/listingSection/CategorySection";
 
 interface DataProps {
   categories: Category[];
@@ -40,17 +39,10 @@ interface ExpenseForm {
   categoryID: number | null;
 }
 
-interface LogStateProps {
-  onLogStart: () => void;
-  onLogComplete: () => void;
-}
-
-
-const QikLogger = ({ categories }: DataProps, {onLogStart, onLogComplete}: LogStateProps) => {
+const QikLogger = ({ categories }: DataProps) => {
   const [date, setDate] = useState<Date>(new Date());
   const [categ, setCateg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   const isToday = (date: Date) => {
     const today = new Date();
@@ -87,7 +79,6 @@ const QikLogger = ({ categories }: DataProps, {onLogStart, onLogComplete}: LogSt
 
   const onSubmit: SubmitHandler<ExpenseForm> = async (data) => {
     setIsSubmitting(true);
-    onLogStart();
     try {
       const response = await fetch("/api/expense", {
         method: "POST",
@@ -109,7 +100,6 @@ const QikLogger = ({ categories }: DataProps, {onLogStart, onLogComplete}: LogSt
       }
     } finally {
       setIsSubmitting(false);
-      onLogComplete();
     }
   };
 
@@ -220,33 +210,7 @@ const QikLogger = ({ categories }: DataProps, {onLogStart, onLogComplete}: LogSt
                         <X className="text-slate-900 w-6 h-6"></X>
                       </Drawer.Close>
                     </div>
-                    <div className="w-full h-full flex flex-col gap-5 px-8 pt-6 min-[360px]:max-[800px]:px-4 min-[360px]:max-[800px]:gap-4">
-                      <ul className="w-full flex flex-col gap-2 min-[360px]:max-[800px]:py-2 min-[360px]:max-[800px]:rounded-xl bg-white border-slate-200 border py-3 px-2 rounded-xl">
-                        {categoryList.map((category) => (
-                          <li
-                            key={category.id}
-                            className="flex gap-2 items-center pl-4"
-                          >
-                            <span className="text-base font-medium text-slate-600 w-full">
-                              {category.title}
-                            </span>
-                            <Button
-                              onClick={() => deleteCategory(category.id)}
-                              variant="ghost"
-                              size="icon"
-                              className=" shrink-0"
-                            >
-                              <Trash2 className="w-5 h-5 text-red-800" />
-                            </Button>
-                          </li>
-                        ))}
-                      </ul>
-                      <CategoryList categories={categoryList} isAddingCategory={isAddingCategory}/>
-                      <CategoryInputForm 
-                        onAddStart={() => setIsAddingCategory(true)}
-                        onAddComplete={() => setIsAddingCategory(false)}
-                      />
-                    </div>
+                    <CategorySection categories={categoryList}/>
                   </div>
                 </Drawer.Content>
               </Drawer.Portal>
