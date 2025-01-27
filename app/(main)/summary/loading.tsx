@@ -2,7 +2,12 @@ import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const loading = () => {
-  return <Skeleton className="w-full max-w-[1840px] h-[800px] rounded-xl" />;
+  return (
+      <div className="grid-cols-12 w-full max-w-[1840px] h-[760px]">
+        <Skeleton className="col-span-9 h-[760px] rounded-xl" />
+        <Skeleton className="col-span-3 h-[760px] rounded-xl" />
+      </div>
+    );
 };
 
 export default loading;

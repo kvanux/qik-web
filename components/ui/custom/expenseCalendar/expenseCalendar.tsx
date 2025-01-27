@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -33,6 +34,7 @@ import {
   ArchiveRestore,
   Banknote,
   X,
+  Loader2,
   Trash2,
 } from "lucide-react";
 import MonthExpenseChart from "@/components/ui/custom/monthExpenseChart/monthExpenseChart";
@@ -57,6 +59,12 @@ const ExpenseCalendar = ({
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [maxCells, setMaxCells] = useState<number>(8);
+  const [isAddingIncome, setIsAddingIncome] = useState(false);
+  const [isAddingBilling, setIsAddingBilling] = useState(false);
+  const [deletingExpense, setDeletingExpense] = useState<number[]>([]);
+  const [deletingIncome, setDeletingIncome] = useState<number[]>([]);
+  const [deletingBilling, setDeletingBilling] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const daysInMonth = useMemo(() => {
     const year = selectedMonth.getFullYear();
@@ -100,20 +108,25 @@ const ExpenseCalendar = ({
 
   useEffect(() => {
     async function fetchBalance() {
-      const response = await fetch(
-        `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}&userID=${currentUserId}`,
-        { credentials: "include" }
-      );
-      if (!response.ok) throw new Error("Failed to fetch balance");
-
-      const data = await response.json();
-      setLeftover(data.balance);
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/balance?year=${getLeftoverMonth.year}&month=${getLeftoverMonth.month}&userID=${currentUserId}`,
+          { credentials: "include" }
+        );
+        if (!response.ok) throw new Error("Failed to fetch balance");
+  
+        const data = await response.json();
+        setLeftover(data.balance);
+      } finally {
+        setIsLoading(false);
+      }
     }
-
     fetchBalance();
   }, [getLeftoverMonth]);
 
   const deleteExpense = async function (expenseId: number) {
+    setDeletingExpense((prev) => [...prev, expenseId]);
     try {
       const response = await fetch(`/api/expense?id=${expenseId}`, {
         method: "DELETE",
@@ -123,9 +136,12 @@ const ExpenseCalendar = ({
       return response;
     } catch (error) {
       toast.error("Có lỗi xảy ra.", { description: `${error}` });
+    } finally {
+      setDeletingExpense((prev) => prev.filter((id) => id !== expenseId));
     }
   };
   const deleteIncome = async function (incomeId: number) {
+    setDeletingIncome((prev) => [...prev, incomeId]);
     try {
       const response = await fetch(`/api/income?id=${incomeId}`, {
         method: "DELETE",
@@ -135,9 +151,12 @@ const ExpenseCalendar = ({
       return response;
     } catch (error) {
       toast.error("Có lỗi xảy ra.", { description: `${error}` });
+    } finally {
+      setDeletingIncome((prev) => prev.filter((id) => id !== incomeId));
     }
   };
   const deleteBilling = async function (billingId: number) {
+    setDeletingBilling((prev) => [...prev, billingId]);
     try {
       const response = await fetch(`/api/billing?id=${billingId}`, {
         method: "DELETE",
@@ -147,6 +166,8 @@ const ExpenseCalendar = ({
       return response;
     } catch (error) {
       toast.error("Có lỗi xảy ra.", { description: `${error}` });
+    } finally {
+      setDeletingBilling((prev) => prev.filter((id) => id !== billingId));
     }
   };
 
@@ -299,15 +320,12 @@ const ExpenseCalendar = ({
         </div>
       </div>
       <div
-        id="sectionContent-Stats"
         className="grid grid-cols-9 max-[1700px]:grid-cols-10 max-[1280px]:grid-cols-none gap-6 w-full"
       >
         <div
-          id="leftContent-Stats"
           className="col-span-5 max-[1700px]:col-span-6 w-full flex flex-col gap-4 min-[360px]:max-[800px]:gap-2"
         >
           <div
-            id="cardTop"
             className="w-full rounded-xl flex bg-gradient-to-r from-slate-200 to-slate-100 p-4 justify-between items-start min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-2"
           >
             <Drawer.Root direction="right">
@@ -368,13 +386,22 @@ const ExpenseCalendar = ({
                               variant="ghost"
                               size="icon"
                               className=" shrink-0"
+                              disabled={deletingIncome.includes(income.id)}
                             >
-                              <Trash2 className="w-5 h-5 text-red-800" />
+                              {deletingIncome.includes(income.id) ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-slate-600" />
+                              ) : (
+                                <Trash2 className="w-5 h-5 text-red-800" />
+                              )}
                             </Button>
                           </li>
                         ))}
+                        {incomeList.length === 0 && (
+                          <p className="text-base text-slate-500">Chưa có thu nhập</p>
+                        )}
+                        {isAddingIncome && <Skeleton className="h-10 w-40 rounded-lg"/>}
                       </ul>
-                      <IncomeInputForm currentMonth={adjustSelectedMonth} />
+                      <IncomeInputForm currentMonth={adjustSelectedMonth} onAddComplete={() => setIsAddingIncome(false)} onAddStart={() => setIsAddingIncome(true)}/>
                     </div>
                   </div>
                 </Drawer.Content>
@@ -438,19 +465,27 @@ const ExpenseCalendar = ({
                               variant="ghost"
                               size="icon"
                               className=" shrink-0"
+                              disabled={deletingBilling.includes(billing.id)}
                             >
-                              <Trash2 className="w-5 h-5 text-red-800" />
+                              {deletingBilling.includes(billing.id) ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-slate-600" />
+                              ) : (
+                                <Trash2 className="w-5 h-5 text-red-800" />
+                              )}
                             </Button>
                           </li>
                         ))}
+                        {billingList.length === 0 && (
+                          <p className="text-base text-slate-500">Chưa có hoá đơn</p>
+                        )}
+                        {isAddingBilling && <Skeleton className="h-10 w-40 rounded-lg"/>}
                       </ul>
-                      <BillingInputForm currentMonth={adjustSelectedMonth} />
+                      <BillingInputForm currentMonth={adjustSelectedMonth} onAddComplete={() => setIsAddingBilling(false)} onAddStart={() => setIsAddingBilling(true)}/>
                     </div>
                   </div>
                 </Drawer.Content>
               </Drawer.Portal>
             </Drawer.Root>
-
             <ColoredStats
               label="Dư tháng trước"
               value={leftover}
@@ -465,7 +500,6 @@ const ExpenseCalendar = ({
             />
           </div>
           <div
-            id="rowBottom"
             className="w-full flex gap-4 shrink-0 min-[360px]:max-[800px]:flex-col min-[360px]:max-[800px]:gap-2"
           >
             <BalanceCard
@@ -504,9 +538,10 @@ const ExpenseCalendar = ({
           <MonthExpenseChart data={monthlyData.chartData} />
         </div>
       </div>
-      <div id="sectionContent-Data">
+      <div>
         <div className="w-full">
-          <Table className="w-full border-collapse table-fixed">
+          {isLoading && (<div className="w-full bg-qik-pri-600 animate-pulse h-[1px]"/>)}
+          <Table className={`w-full border-collapse table-fixed ${isLoading && "opacity-60"}`}>
             <TableHeader>
               <TableRow>
                 {daysInMonth.map((day) => (
@@ -552,7 +587,9 @@ const ExpenseCalendar = ({
                           !isSameDay(day, today)
                             ? "bg-slate-50"
                             : ""
-                        }`}
+                        }
+                        ${deletingExpense && "opacity-60"}
+                        `}
                       >
                         {expense ? (
                           <span className="animate-numEntry">
@@ -569,8 +606,9 @@ const ExpenseCalendar = ({
                             size="icon"
                             onClick={() => deleteExpense(expense.id)}
                             className="hidden group-hover:flex transition-all duration-300 shrink-0 hover:bg-rose-100"
+                            disabled={deletingExpense.includes(expense.id)}
                           >
-                            <Trash2 className="w-5 h-5 text-red-800" />
+                            {deletingExpense.includes(expense.id) ? (<Loader2 className="h-5 w-5 animate-spin text-slate-600" />) : (<Trash2 className="w-5 h-5 text-red-800" />)}
                           </Button>
                         )}
                       </TableCell>

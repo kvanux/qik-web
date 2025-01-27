@@ -1,13 +1,18 @@
+'use client';
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { revalidateExpenses } from "@/app/actions";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Props {
   currentMonth: Date;
+  onAddStart: () => void;
+  onAddComplete: () => void;
 }
 
 interface IncomeForm {
@@ -16,7 +21,10 @@ interface IncomeForm {
   month: string;
 }
 
-const IncomeInputForm = ({ currentMonth }: Props) => {
+const IncomeInputForm = ({ currentMonth, onAddComplete, onAddStart }: Props) => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const router = useRouter();
+
   const { register, handleSubmit, reset } = useForm<IncomeForm>({
     defaultValues: {
       amount: undefined,
@@ -26,6 +34,8 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
   });
 
   const onSubmit: SubmitHandler<IncomeForm> = async (data) => {
+    onAddStart();
+    setIsSubmitting(true)
     try {
       const response = await fetch("/api/income", {
         method: "POST",
@@ -37,12 +47,15 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
 
       reset();
 
-      await revalidateExpenses();
+      router.refresh();
       toast.success(`Income added successfully`);
 
       return response.json();
     } catch (error) {
       toast.error("Failed to add income", { description: `${error}` });
+    } finally {
+      onAddComplete();
+      setIsSubmitting(false);
     }
   };
 
@@ -67,12 +80,14 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
           {...register("amount")}
           placeholder="Nhập số tiền"
           autoComplete="off"
+          disabled={isSubmitting}
         />
       </div>
       <Input
         className="w-full text-base focus:outline-none focus-visible:ring-0 focus-visible:border-2 focus-visible:ring-offset-0 focus-visible:border-qik-pri-400"
         {...register("title")}
         placeholder="Nhập mô tả"
+        disabled={isSubmitting}
       />
       {screen.width > 360 && screen.width < 800 ? (
         <Button
@@ -80,9 +95,18 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
           variant="default"
           size="default"
           className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700 text-base w-full"
+          disabled={isSubmitting}
         >
-          <PlusCircle className="w-6 h-6 text-white shrink-0" />
-          Thu nhập mới
+          {isSubmitting ? (
+              <Loader2 className="w-6 h-6 text-white shrink-0 animate-spin" /> 
+            ) : (
+              <PlusCircle className="w-6 h-6 text-white shrink-0" />
+              )}
+          {isSubmitting ? (
+              "Chờ chút nha"
+              ) : (
+              "Hóa đơn mới"
+          )}
         </Button>
       ) : (
         <Button
@@ -90,8 +114,13 @@ const IncomeInputForm = ({ currentMonth }: Props) => {
           variant="default"
           size="icon"
           className="shrink-0 bg-qik-sec-700 hover:bg-qik-pri-700"
+          disabled={isSubmitting}
         >
-          <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          {isSubmitting ? (
+            <Loader2 className="w-6 h-6 text-white shrink-0 animate-spin" />
+          ) : (
+            <PlusCircle className="w-6 h-6 text-white shrink-0" />
+          )}
         </Button>
       )}
     </form>

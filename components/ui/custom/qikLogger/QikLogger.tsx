@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -25,9 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Drawer } from "vaul";
-import { X, Trash2, Settings, Info, Loader2, PlusCircle } from "lucide-react";
-import CategorySection from "@/components/ui/custom/listingSection/CategorySection";
+import { Info, Loader2, PlusCircle } from "lucide-react";
 
 interface DataProps {
   categories: Category[];
@@ -86,6 +83,7 @@ const QikLogger = ({ categories }: DataProps) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        next: { revalidate: 0},
       });
 
       if (response.status === 500) {
@@ -93,26 +91,13 @@ const QikLogger = ({ categories }: DataProps) => {
           description: `${response.statusText}`,
         });
       } else {
+        await revalidateExpenses();
         setValue("amount", undefined);
         toast.success(`Nhập chi phí mới thành công`);
-        await revalidateExpenses();
         return response.json();
       }
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const deleteCategory = async function (categoryId: number) {
-    try {
-      const response = await fetch(`/api/category?id=${categoryId}`, {
-        method: "DELETE",
-      });
-      toast.info("Xóa thành công.");
-      revalidateExpenses();
-      return response;
-    } catch (error) {
-      toast.error("Có lỗi xảy ra", { description: `${error}` });
     }
   };
 
@@ -181,41 +166,7 @@ const QikLogger = ({ categories }: DataProps) => {
               className="text-base"
             />
           </SelectTrigger>
-          <SelectContent>
-            <Drawer.Root direction="right">
-              <Drawer.Trigger asChild>
-                <Button
-                  variant={"ghost"}
-                  className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700"
-                >
-                  <Settings />
-                  Điều chỉnh phân loại
-                </Button>
-              </Drawer.Trigger>
-              <Drawer.Portal>
-                <Drawer.Content
-                  className="right-0 top-0 bottom-0 fixed outline-none w-[600px] flex min-[360px]:max-[800px]:w-11/12 z-50"
-                  style={
-                    {
-                      "--initial-transform": "calc(100% + 8px)",
-                    } as React.CSSProperties
-                  }
-                >
-                  <div className="bg-white/80 backdrop-blur-[6px] shadow-md h-full w-full grow flex flex-col min-[360px]:max-[800px]:bg-white min-[360px]:max-[800px]:backdrop-blur-none ">
-                    <div className="w-full flex px-8 pt-8 pb-6 justify-between items-center min-[360px]:max-[800px]:p-4 border-b border-slate-200">
-                      <Drawer.Title className="font-semibold text-xl text-slate-800 min-[360px]:max-[800px]:text-lg">
-                        Điều chỉnh phân loại
-                      </Drawer.Title>
-                      <Drawer.Close>
-                        <X className="text-slate-900 w-6 h-6"></X>
-                      </Drawer.Close>
-                    </div>
-                    <CategorySection categories={categoryList}/>
-                  </div>
-                </Drawer.Content>
-              </Drawer.Portal>
-            </Drawer.Root>
-            <Separator orientation="horizontal" className="w-full" />
+          <SelectContent>      
             <SelectItem key={null} value={"null"} className="text-slate-500">
               Không ghi rõ phân loại
             </SelectItem>
