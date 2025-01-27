@@ -6,8 +6,7 @@ import { Category } from "@prisma/client";
 import { toast } from "sonner";
 import { revalidateExpenses } from "@/app/actions";
 import { Button } from "../../button";
-import { Loader2 } from "lucide-react";
-import { Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 
 interface CategoryListProps {
   categories: Category[];
@@ -56,7 +55,7 @@ const CategoryList = ({ categories, isAddingCategory }: CategoryListProps) => {
         </li>
       ))}
       {categories.length === 0 && (
-        <p className="text-base text-slate-500">Chưa có phân loại</p>
+        <p className="text-base text-slate-400 ml-1">Chưa có phân loại</p>
       )}
       {isAddingCategory && <Skeleton className="h-10 w-40 rounded-lg" />}
     </ul>

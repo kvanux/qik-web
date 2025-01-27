@@ -397,7 +397,7 @@ const ExpenseCalendar = ({
                           </li>
                         ))}
                         {incomeList.length === 0 && (
-                          <p className="text-base text-slate-500">Chưa có thu nhập</p>
+                          <p className="text-base text-slate-400 ml-1">Chưa có thu nhập</p>
                         )}
                         {isAddingIncome && <Skeleton className="h-10 w-40 rounded-lg"/>}
                       </ul>
@@ -476,7 +476,7 @@ const ExpenseCalendar = ({
                           </li>
                         ))}
                         {billingList.length === 0 && (
-                          <p className="text-base text-slate-500">Chưa có hoá đơn</p>
+                          <p className="text-base text-slate-400 ml-1">Chưa có hoá đơn</p>
                         )}
                         {isAddingBilling && <Skeleton className="h-10 w-40 rounded-lg"/>}
                       </ul>
@@ -541,14 +541,14 @@ const ExpenseCalendar = ({
       <div>
         <div className="w-full">
           {isLoading && (<div className="w-full bg-qik-pri-600 animate-pulse h-[1px]"/>)}
-          <Table className={`w-full border-collapse table-fixed ${isLoading && "opacity-60"}`}>
+          <Table className={`w-full border-collapse table-fixed ${isLoading && "opacity-40"}`}>
             <TableHeader>
               <TableRow>
                 {daysInMonth.map((day) => (
                   <TableHead
                     ref={isSameDay(day, today) ? todayRef : null}
                     key={format(day, "yyyy-MM-dd")}
-                    className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-32 h-8 sticbetweenp-0 z-10 justify-start ${
+                    className={`border-b border-b-slate-30 p-2 text-left text-sm font-normal min-w-[80px] w-32 h-8 z-10 justify-start ${
                       isSameDay(day, today) &&
                       "bg-gradient-to-b from-qik-ter-500 to-qik-pri-500 text-white font-semibold border-b-qik-pri-400"
                     }

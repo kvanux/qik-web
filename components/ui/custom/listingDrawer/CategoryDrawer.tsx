@@ -16,7 +16,7 @@ const CategoryDrawer = ({ categories }: { categories: Category[] }) => {
             <Drawer.Trigger asChild>
                 <Button
                   variant={"ghost"}
-                  className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700"
+                  className="max-[1280px]:text-xs items-center w-full text-medium text-slate-700 px-1 py-2"
                 >
                   <Settings />
                   Điều chỉnh phân loại
