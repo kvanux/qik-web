@@ -588,7 +588,6 @@ const ExpenseCalendar = ({
                             ? "bg-slate-50"
                             : ""
                         }
-                        ${deletingExpense && "opacity-60"}
                         `}
                       >
                         {expense ? (
