@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
         });
 
         // Get current month's transactions
-        const startOfMonth = new Date(year, month - 1, 2);
-        const endOfMonth = new Date(year, month);
+        const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
+        const endOfMonth = new Date(Date.UTC(year, month, 0)); 
 
         const [income, expenses, billing] = await Promise.all([
             prisma.income.aggregate({
