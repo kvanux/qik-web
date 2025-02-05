@@ -222,11 +222,11 @@ const DataDashboard = ({
         });
       billSum / inSum > 0.7 &&
         groups.push({
-          type: "warning",
+          type: "severe",
           title: "Hóa đơn quá cao",
-          content: `Tổng hoá đơn tháng ${i + 1} chiếm đến ${
-            billSum / inSum
-          }% tổng thu nhập.`,
+          content: `Tổng hoá đơn tháng ${i + 1} chiếm đến ${Math.floor(
+            (billSum / inSum) * 100
+          )}% tổng thu nhập.`,
         });
 
       // render warning
